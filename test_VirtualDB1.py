@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-DOWNLOAD_DIR = "VitalDB_data/VitalDB_data/230602"
+DOWNLOAD_DIR = "VitalDB_data/VitalDB_data/NewData"
 if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
@@ -17,5 +17,7 @@ for f in test:
     
 ppp = setD[0]
 x = np.arange(0,len(ppp[1]))
+print(ppp[1])
+plt.figure(1)
 plt.plot(x,ppp[1])
 plt.show()
