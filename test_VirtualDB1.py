@@ -27,9 +27,11 @@ for dataPair in setD:
     k = k+1
 plt.show()
 
+testPandas = testObj.to_pandas(['Infinity/ST_I','Infinity/ST_II','Infinity/ST_III'],None,True,True)
+print(testPandas)
+
 vital1T = vd.read_vital("1.vital")
 vital1TrackNames = vital1T.get_track_names()
 vital1Tset = list()
-vital1Tpandas
 for f in test:
     setD.append((f,vital1T.to_numpy(f,None)))
