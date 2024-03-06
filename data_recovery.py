@@ -14,14 +14,14 @@ from scipy.ndimage import gaussian_filter1d
     
 
 #JUST AN IDEA, WORK IN PROGRESS
-def windowedSmoothing(x,winSize):
+def windowedSmoothing(x,winSize,tol,minSD):
     i = len(x)
     length = len(x)
     smoothedSig = np.array([])
     while i-winSize>=0:
         meanML = np.sum(x[length-i:length-i+winSize])/winSize
         sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2))/(winSize-1)
-        sdML = sdML + 2*(sdML==0)
+        sdML = sdML + minSD*(sdML<tol)
         smoothedSig = np.concatenate((smoothedSig,gaussian_filter1d(x[length-i:length-i+winSize],sigma=sdML,mode='reflect')))
         i = i-winSize
     if i>0:
