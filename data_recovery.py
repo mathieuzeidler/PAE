@@ -105,7 +105,7 @@ sigma = 5  # We can adjust it
 
 # Apply Gaussian filter to ART signal
 if M_ART.size > 0:
-    filtered_M_ART = gaussian_filter1d(M_ART, sigma=sigma, mode='constant', cval=np.nan)
+    filtered_M_ART = gaussian_filter1d(M_ART, sigma=sigma, mode='reflect')
 
     # Display the filtered ART signal
     plt.figure(k)

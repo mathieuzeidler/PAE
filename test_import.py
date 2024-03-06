@@ -1,5 +1,5 @@
 import vitaldb
-
+import numpy as np
 import matplotlib.pyplot as plt
 
 track_names = ['SNUADC/ART']
@@ -17,5 +17,6 @@ plt.figure(figsize=(20, 5))
 plt.plot(samples[:, 0])
 
 plt.show()
+
 
 
