@@ -21,10 +21,11 @@ def windowedSmoothing(x,winSize):
     while i-winSize>=0:
         meanML = np.sum(x[length-i:length-i+winSize])/winSize
         sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2))/(winSize-1)
+        sdML = sdML + 2*(sdML==0)
         smoothedSig = np.concatenate((smoothedSig,gaussian_filter1d(x[length-i:length-i+winSize],sigma=sdML,mode='reflect')))
         i = i-winSize
     if i>0:
-        smoothedSig = np.concatenate(smoothedSig,windowedSmoothing(x[-i:],len(x[-i:])))
+        smoothedSig = np.concatenate((smoothedSig,windowedSmoothing(x[length-i:],len(x[length-i:]))))
     return smoothedSig
 ###############################################################################################################
 
