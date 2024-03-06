@@ -27,6 +27,29 @@ def windowedSmoothing(x,winSize,tol,minSD):
     if i>0:
         smoothedSig = np.concatenate((smoothedSig,windowedSmoothing(x[length-i:],len(x[length-i:]))))
     return smoothedSig
+
+###############################################################################################################
+
+    ## Derivative
+
+###############################################################################################################
+
+def finiteDiffDiscrete(x):
+    dx = np.zeros((len(x)))
+    if len(x)>2:
+        for i in range(len(x)-1):
+            dx[i]=(x[i+1]-x[i])
+            dx[-1] = dx[-3]
+    return dx
+
+def finiteDiffIndexed(x,t):
+    dx = np.zeros((len(x)))
+    if len(x)>2:
+        for i in range(len(x)-1):
+            dx[i] = (x[i+1]-x[i])/(t[i+1]-t[i])
+        dx[-1] = dx[-2]
+    return dx
+
 ###############################################################################################################
 
     ## Reading the data localy and create the matrices to store the values
