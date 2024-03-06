@@ -101,7 +101,7 @@ if M_ART.size > 0:
 ###############################################################################################################
     
 # Filter parameters
-sigma = 5  # Adjust the standard deviation based on your requirements
+sigma = 5  # We can adjust it
 
 # Apply Gaussian filter to ART signal
 if M_ART.size > 0:
