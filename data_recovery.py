@@ -14,18 +14,29 @@ from scipy.ndimage import gaussian_filter1d
     
 
 #JUST AN IDEA, WORK IN PROGRESS
-def windowedSmoothing(x,winSize,tol,minSD):
+def windowedSmoothing(x, winSize, tol, minSD):
     i = len(x)
     length = len(x)
     smoothedSig = np.array([])
-    while i-winSize>=0:
-        meanML = np.sum(x[length-i:length-i+winSize])/winSize
-        sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2)/(winSize-1))
-        sdML = sdML + minSD*(sdML<tol)
-        smoothedSig = np.concatenate((smoothedSig,gaussian_filter1d(x[length-i:length-i+winSize],sigma=sdML,mode='reflect')))
-        i = i-winSize
-    if i>0:
-        smoothedSig = np.concatenate((smoothedSig,windowedSmoothing(x[length-i:],len(x[length-i:]),tol,minSD)))
+
+    while i - winSize >= 0:
+        current_slice = x[length - i:length - i + winSize]
+        valid_values = current_slice[~np.isnan(current_slice)]
+
+        if len(valid_values) > 0:
+            meanML = np.mean(valid_values)
+            sdML = np.std(valid_values)
+            
+            if sdML > 0:
+                sdML = sdML + minSD * (sdML < tol)
+                smoothed_slice = gaussian_filter1d(valid_values, sigma=sdML, mode='reflect')
+                smoothedSig = np.concatenate((smoothedSig, smoothed_slice))
+
+        i = i - winSize
+
+    if i > 0:
+        smoothedSig = np.concatenate((smoothedSig, windowedSmoothing(x[length - i:], len(x[length - i:]), tol, minSD)))
+
     return smoothedSig
 
 ###############################################################################################################
