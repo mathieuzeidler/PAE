@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter1d
 
 ###############################################################################################################
 
@@ -16,7 +17,13 @@ if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
 
+# these are data from Ramses
 testObj = vd.read_vital("VitalDB_data/VitalDB_data/230602/QUI12_230602_194231.vital")
+
+# these are data from VitalDB OpenData Set
+#testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital") 
+
+
 test = testObj.get_track_names()
 setD = list()
 
@@ -87,6 +94,41 @@ if M_ART.size > 0:
     print("\nMatrix M_ART:")
     print(M_ART)
 
+###############################################################################################################
+    
+    ## Apply Gaussian filter to ART signal
+
+###############################################################################################################
+    
+# Filter parameters
+sigma = 5  # Adjust the standard deviation based on your requirements
+
+# Apply Gaussian filter to ART signal
+if M_ART.size > 0:
+    filtered_M_ART = gaussian_filter1d(M_ART, sigma=sigma, mode='constant', cval=np.nan)
+
+    # Display the filtered ART signal
+    plt.figure(k)
+    plt.plot(filtered_M_ART, label='Filtered ART')
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Filtered)")
+    plt.title("Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+
+    # Display the original and filtered signals
+    plt.figure(k)
+    plt.plot(M_ART, label='Original ART', alpha=0.5)
+    plt.plot(filtered_M_ART, label='Filtered ART', linewidth=2)
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+
+    # Update M_ART with the filtered values
+    M_ART = filtered_M_ART
+
 ###################################################################################################
     
     ## Calculating the minimum, maximum, and standard deviation for the matrices
@@ -112,3 +154,6 @@ if M_ART.size > 0:
     print(f"\nOverall Minimum of Matrix M_ART: {min_val_M_ART}")
     print(f"Overall Maximum of Matrix M_ART: {max_val_M_ART}")
     print(f"Overall Standard Deviation of Matrix M_ART: {std_dev_M_ART}")
+
+
+

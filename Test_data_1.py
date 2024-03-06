@@ -3,5 +3,5 @@ import vitaldb;
 
 vf = vitaldb.VitalFile(1)
 
-vf.to_vital('1.vital')
+vf.to_vital('4.vital')
 
