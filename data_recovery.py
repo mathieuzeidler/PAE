@@ -20,12 +20,12 @@ def windowedSmoothing(x,winSize,tol,minSD):
     smoothedSig = np.array([])
     while i-winSize>=0:
         meanML = np.sum(x[length-i:length-i+winSize])/winSize
-        sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2))/(winSize-1)
+        sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2)/(winSize-1))
         sdML = sdML + minSD*(sdML<tol)
         smoothedSig = np.concatenate((smoothedSig,gaussian_filter1d(x[length-i:length-i+winSize],sigma=sdML,mode='reflect')))
         i = i-winSize
     if i>0:
-        smoothedSig = np.concatenate((smoothedSig,windowedSmoothing(x[length-i:],len(x[length-i:]))))
+        smoothedSig = np.concatenate((smoothedSig,windowedSmoothing(x[length-i:],len(x[length-i:]),tol,minSD)))
     return smoothedSig
 
 ###############################################################################################################
@@ -52,6 +52,28 @@ def finiteDiffIndexed(x,t):
 
 ###############################################################################################################
 
+    ## Max/Min detection
+
+###############################################################################################################
+
+
+
+# def localMaxPos(dx, tol):
+#     criticalIndex = np.array([])
+#     maxIndex = np.array([])
+#     maxValues = np.array([])
+#     minIndex = np.array([])
+#     minValues = np.array([])
+#     for i in range(len(dx)):
+#         if abs(dx[i])<tol:
+#             criticalIndex = np.concatenate((criticalIndex,i))
+#     for j in range(len(criticalIndex)):
+        
+        
+    
+
+###############################################################################################################
+
     ## Reading the data localy and create the matrices to store the values
 
 ###############################################################################################################
@@ -63,7 +85,7 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 # these are data from Ramses
-testObj = vd.read_vital("VitalDB_data/VitalDB_data/230602/QUI12_230602_194231.vital")
+testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
 
 # these are data from VitalDB OpenData Set
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital") 
@@ -75,6 +97,7 @@ setD = list()
 # Create matrices to store the values (can add more variables)
 M_SPO2 = np.array([])
 M_ART = np.array([])
+M_PLETH = np.array([])
 
 for f in test:
     setD.append((f, testObj.to_numpy(f, None)))
@@ -88,18 +111,19 @@ for f in test:
 k = 1
 pleth_spo2_found = False
 art_found = False
+pleth_wf_found = False
 
 ## Take only 2 hours on vitaldb opendata set
 for dataPair in setD:
-    if dataPair[0] == 'Infinity/PLETH_SPO2' or dataPair[0] == 'SNUADC/ART':
-        x = np.arange(0, len(dataPair[1]))
-        #print(dataPair[1]) # Uncomment to see the values of the data
-        plt.figure(k)
-        plt.stem(x, dataPair[1], linefmt='grey', markerfmt='')
-        plt.xlabel("t")
-        plt.ylabel(dataPair[0])
-        plt.title(dataPair[0])
-        k = k + 1
+    if dataPair[0] == 'Infinity/PLETH_SPO2' or dataPair[0] == 'SNUADC/ART' or dataPair[0] == "SNUADC/PLETH":
+        # x = np.arange(0, len(dataPair[1]))
+        # #print(dataPair[1]) # Uncomment to see the values of the data
+        # plt.figure(k)
+        # plt.stem(x, dataPair[1], linefmt='grey', markerfmt='')
+        # plt.xlabel("t")
+        # plt.ylabel(dataPair[0])
+        # plt.title(dataPair[0])
+        # k = k + 1
 
         if dataPair[0] == 'Infinity/PLETH_SPO2':
             pleth_spo2_found = True
@@ -120,6 +144,14 @@ for dataPair in setD:
                     M_ART = values
                 else:
                     M_ART = np.vstack((M_ART, values))
+        elif dataPair[0] == "SNUADC/PLETH":
+            pleth_wf_found = True
+            values = dataPair[1][~np.isnan(dataPair[1])]
+            if len(values) > 0:
+                if M_PLETH.size == 0:
+                    M_PLETH = values
+                else:
+                    M_PLETH = np.vstack((M_SPO2, values))
 
 if not pleth_spo2_found:
     print("There is not PLETH_SPO2 in the data")
@@ -154,7 +186,7 @@ if M_ART.size > 0:
 
     # Display the filtered ART signal
     plt.figure(k)
-    plt.plot(filtered_M_ART, label='Filtered ART')
+    plt.plot(filtered_M_ART[1000000:1050001], label='Filtered ART')
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.title("Filtered SNUADC/ART Signal")
@@ -168,6 +200,13 @@ if M_ART.size > 0:
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART")
     plt.title("Original vs. Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    plt.plot(windowedSmoothing(M_ART[1000000:1050001],1000,0.1,4),label="WINDOWED FILTER ART")
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Filtered)")
     plt.legend()
     k += 1
 
