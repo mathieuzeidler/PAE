@@ -18,12 +18,14 @@ def windowedSmoothing(x,winSize):
     i = len(x)
     length = len(x)
     smoothedSig = np.array([])
-    while i%winSize>0:
+    while i/winSize>0:
         meanML = np.sum(x[length-i:length-i+winSize])/winSize
         sdML = np.sqrt(np.sum((x[length-i:length-i+winSize]-meanML)**2))/(winSize-1)
         smoothedSig = np.concatenate((smoothedSig,gaussian_filter1d(x[length-i:length-i+winSize],sigma=sdML,mode='reflect')))
         i = i-winSize
-    
+    if i>0:
+        smoothedSig = np.concatenate(snoothedSig,windowedSmoothing(x[-i:],))
+    return smoothedSig
 ###############################################################################################################
 
     ## Reading the data localy and create the matrices to store the values
