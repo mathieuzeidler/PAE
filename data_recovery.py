@@ -24,7 +24,6 @@ def windowedSmoothing(x, winSize, tol, minSD):
         valid_values = current_slice[~np.isnan(current_slice)]
 
         if len(valid_values) > 0:
-            meanML = np.mean(valid_values)
             sdML = np.std(valid_values)
             
             if sdML > 0:
@@ -197,7 +196,7 @@ if M_ART.size > 0:
 
     # Display the filtered ART signal
     plt.figure(k)
-    plt.plot(filtered_M_ART[1000000:1050001], label='Filtered ART')
+    plt.plot(filtered_M_ART[1000000:1002001], label='Filtered ART')
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.title("Filtered SNUADC/ART Signal")
@@ -215,12 +214,33 @@ if M_ART.size > 0:
     k += 1
     
     plt.figure(k)
-    plt.plot(windowedSmoothing(M_ART[1000000:1050001],1000,0.1,4),label="WINDOWED FILTER ART")
+    plt.plot(windowedSmoothing(M_ART[1000000:100001],1000,0.1,4),label="WINDOWED FILTER ART")
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.legend()
     k += 1
-
+    
+    plt.figure(k)
+    smoothedM_Art = windowedSmoothing(M_ART[1000000:1002001],1000,0.1,4)
+    dxM_Art = finiteDiffDiscrete(smoothedM_Art)
+    plt.plot(dxM_Art,label="DX WINDOWED FILTER ART")
+    plt.plot(finiteDiffDiscrete(dxM_Art),label="DXDX WINDOWED FILTER ART")
+    plt.plot()
+    plt.plot
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Derivative)")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    plt.plot(finiteDiffDiscrete(dxM_Art),label="DXDX WINDOWED FILTER ART")
+    plt.plot()
+    plt.plot
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Derivative)")
+    plt.legend()
+    k += 1
+    
     # Update M_ART with the filtered values
     M_ART = filtered_M_ART
 
