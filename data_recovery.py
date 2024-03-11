@@ -101,8 +101,7 @@ def localMinOP2(x):
 def divideMaximums(x,localMax):
     valuesMax = np.zeros((len(localMax),1))
     for i in range(len(localMax)):
-        p =localMax[i]
-        valuesMax[i] = x[p]
+        valuesMax[i] = x[localMax[i]]
     meanM = np.mean(valuesMax)
     absMax = np.array([])
     locMax = np.array([])
@@ -112,6 +111,20 @@ def divideMaximums(x,localMax):
         else:
             locMax = np.append(locMax,localMax[i])
     return np.vstack((absMax,locMax))
+
+def divideMinimums(x,localMin):
+    valuesMin = np.zeros((len(localMin),1))
+    for i in range(len(localMin)):
+        valuesMin[i] = x[localMin[i]]
+    meanM = np.mean(valuesMin)
+    absMin = np.array([])
+    locMin = np.array([])
+    for i in range(len(localMin)):
+        if valuesMin[i]<meanM:
+            absMin = np.append(absMin,localMin[i])
+        else:
+            locMin = np.append(locMin,localMin[i])
+    return np.vstack((absMin,locMin))
 
 ###############################################################################################################
 
@@ -347,11 +360,14 @@ if M_ART.size > 0:
     k += 1
     
     locAbsM = divideMaximums(smoothedM_Art,locMaxM_Art[0])
+    locAbsm = divideMinimums(smoothedM_Art,locMinM_Art[0])
     plt.figure(k)
     meanART = np.mean(M_ART)
     plt.plot(smoothedM_Art, label='smoothed')
     plt.vlines(locAbsM[0,:],color='red',ymin=60,ymax=95)
     plt.vlines(locAbsM[1,:],color='green',ymin=60,ymax=95)
+    plt.vlines(locAbsm[0,:],color='yellow',ymin=60,ymax=95)
+    plt.vlines(locAbsm[1,:],color='blue',ymin=60,ymax=95)
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART")
     plt.title("Original vs. Filtered SNUADC/ART Signal")
