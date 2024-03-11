@@ -4,6 +4,8 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
+from scipy.signal import symiirorder2
+from scipy.signal import argrelextrema
 
 
 ###############################################################################################################
@@ -58,6 +60,7 @@ def finiteDiffIndexed(x,t):
         for i in range(len(x)-1):
             dx[i] = (x[i+1]-x[i])/(t[i+1]-t[i])
         dx[-1] = dx[-2]
+
     return dx
 
 ###############################################################################################################
@@ -67,19 +70,18 @@ def finiteDiffIndexed(x,t):
 ###############################################################################################################
 
 
+#GO-TO function
+def localMaxOP2(x):
+    return argrelextrema(x,np.greater)
 
-# def localMaxPos(dx, tol):
-#     criticalIndex = np.array([])
-#     maxIndex = np.array([])
-#     maxValues = np.array([])
-#     minIndex = np.array([])
-#     minValues = np.array([])
-#     for i in range(len(dx)):
-#         if abs(dx[i])<tol:
-#             criticalIndex = np.concatenate((criticalIndex,i))
-#     for j in range(len(criticalIndex)):
-        
-        
+#If the first method did not find a specific loc,Max, use this function
+def localMaxPos(dx, tol):
+    criticalIndex = np.where(abs(dx)<tol)
+    return criticalIndex
+
+def localMinOP2(x):
+    return argrelextrema(x,np.less)
+
     
 
 ###############################################################################################################
@@ -214,15 +216,29 @@ if M_ART.size > 0:
     k += 1
     
     plt.figure(k)
-    plt.plot(windowedSmoothing(M_ART[1000000:100001],1000,0.1,4),label="WINDOWED FILTER ART")
+    smoothedM_Art = windowedSmoothing(M_ART[1000000:1001001],1000,0.1,4)
+    smoothedM_Art2 = symiirorder2(M_ART[1000000:1001001],)
+    dxM_Art = finiteDiffDiscrete(smoothedM_Art)
+    critM_Art = localMaxPos(dxM_Art,0.5e-2)
+    locMaxM_Art = localMaxOP2(smoothedM_Art)
+    locMinM_Art = localMinOP2(smoothedM_Art)
+    plt.plot(smoothedM_Art,label="WINDOWED FILTER ART")
+    plt.vlines(critM_Art,30,98,colors='lightcoral')
+    plt.vlines(locMaxM_Art,30,98,colors='green')
+    plt.vlines(locMinM_Art,30,98,colors='yellow')
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.legend()
     k += 1
     
     plt.figure(k)
-    smoothedM_Art = windowedSmoothing(M_ART[1000000:1002001],1000,0.1,4)
-    dxM_Art = finiteDiffDiscrete(smoothedM_Art)
+    plt.plot(smoothedM_Art,label="WINDOWED FILTER ART")
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Filtered)")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
     plt.plot(dxM_Art,label="DX WINDOWED FILTER ART")
     plt.plot(finiteDiffDiscrete(dxM_Art),label="DXDX WINDOWED FILTER ART")
     plt.plot()
