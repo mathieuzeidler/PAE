@@ -23,8 +23,8 @@ def windowedSmoothingProcess(x, winSize, tol, minSD):
     # semiWin = round(winSize/2)
     semiWin = winSize
     while i - winSize >= 0:
-        imin = length - i;
-        imax = length - i + winSize;
+        imin = length - i
+        imax = length - i + winSize
         current_slice = x[imin:imax]
         #valid_values = current_slice[~np.isnan(current_slice)] we shoukd filter out NaN values before filtering
         valid_values = current_slice
@@ -362,9 +362,6 @@ if M_ART.size > 0:
     M_ART = filtered_M_ART
 
 
-    
-plt.show()
-
 ###################################################################################################
     
     ## Calculating the minimum, maximum, and standard deviation for the matrices
@@ -391,5 +388,21 @@ if M_ART.size > 0:
     print(f"Overall Maximum of Matrix M_ART: {max_val_M_ART}")
     print(f"Overall Standard Deviation of Matrix M_ART: {std_dev_M_ART}")
 
+###################################################################################################
+    
+    ## Calculate the integral of the filtred signal (trapz method)
 
+#####################################################################################################
+    
+    
+# Calculate the integral of the filtered ART signal between 2 maximums
+    
+# max1 = 365 and max2 = 805
+max1 = 365
+max2 = 805
+if M_ART.size > 0 and max1 < max2:
+    sliced_M_ART = M_ART[max1:max2]
+    integral_M_ART = np.trapz(sliced_M_ART)
+    print(f"\nIntegral of the filtered ART signal between max1 and max2: {integral_M_ART}")
 
+plt.show()
