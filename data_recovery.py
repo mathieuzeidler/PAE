@@ -99,18 +99,21 @@ def localMinOP2(x):
     return argrelextrema(x,np.less)
 
 def divideMaximums(x,localMax):
-    valuesMax = np.array((len(localMax),1))
+    valuesMax = np.zeros((len(localMax),1))
     for i in range(len(localMax)):
-        valuesMax[i] = x[localMax[i]]
+        p =localMax[i]
+        valuesMax[i] = x[p]
     meanM = np.mean(valuesMax)
     absMax = np.array([])
     locMax = np.array([])
     for i in range(len(localMax)):
+        o = valuesMax[i]
         if valuesMax[i]>meanM:
             absMax = np.append(absMax,localMax[i])
         else:
             locMax = np.append(locMax,localMax[i])
-    return np.hstack((absMax,locMax))
+    return np.vstack((absMax,locMax))
+
 ###############################################################################################################
 
     ## Reading the data localy and create the matrices to store the values
@@ -344,8 +347,24 @@ if M_ART.size > 0:
     plt.legend()
     k += 1
     
+    locAbsM = divideMaximums(smoothedM_Art,locMaxM_Art[0])
+    plt.figure(k)
+    meanART = np.mean(M_ART)
+    plt.plot(smoothedM_Art, label='smoothed')
+    plt.vlines(locAbsM[0,:],color='red',ymin=60,ymax=95)
+    plt.vlines(locAbsM[1,:],color='green',ymin=60,ymax=95)
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+    
     # Update M_ART with the filtered values
     M_ART = filtered_M_ART
+
+
+    
+plt.show()
 
 ###################################################################################################
     
