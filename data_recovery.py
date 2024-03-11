@@ -16,11 +16,12 @@ from scipy.signal import argrelextrema
     
 
 #JUST AN IDEA, WORK IN PROGRESS
-def windowedSmoothing(x, winSize, tol, minSD):
+def windowedSmoothingProcess(x, winSize, tol, minSD):
     i = len(x)
     length = len(x)
     smoothedSig = np.array([])
-    semiWin = round(winSize/2)
+    # semiWin = round(winSize/2)
+    semiWin = winSize
     while i - winSize >= 0:
         imin = length - i;
         imax = length - i + winSize;
@@ -39,15 +40,21 @@ def windowedSmoothing(x, winSize, tol, minSD):
                 sdML = sdML + minSD * (sdML < tol)
                 smoothed_slice = gaussian_filter1d(valid_values, sigma=sdML, mode='reflect')
                 if imin>0:
-                    smoothedSig = np.concatenate((smoothedSig, smoothed_slice[semiWin:semiWin+imax-imin]))
+                    smoothedSig = np.concatenate((smoothedSig, smoothed_slice[semiWin+1:semiWin+1+imax-imin]))
                 else:
                     smoothedSig = np.concatenate((smoothedSig, smoothed_slice[:imax]))
         i = i - winSize
 
     if i > 0:
-        smoothedSig = np.concatenate((smoothedSig, windowedSmoothing(x[length - i:], len(x[length - i:]), tol, minSD)))
+        smoothedSig = np.concatenate((smoothedSig, windowedSmoothingProcess(x[length - i:], len(x[length - i:]), tol, minSD)))
 
     return smoothedSig
+
+def windowedSmoothing(x, winSize, tol, minSD):
+    smoothedSignal = windowedSmoothingProcess(x, winSize, tol, minSD)
+    return gaussian_filter1d(smoothedSignal, sigma=6, mode='reflect')
+    
+    
 
 ###############################################################################################################
 
@@ -240,7 +247,22 @@ if M_ART.size > 0:
     k += 1
     
     plt.figure(k)
-    plt.plot(smoothedM_Art[720:820],label="WINDOWED FILTER ART")
+    smoothedM_Art2 = gaussian_filter1d(smoothedM_Art, sigma=6, mode='reflect')
+    dxM_Art = finiteDiffDiscrete(smoothedM_Art)
+    locMaxM_Art2 = localMaxOP2(smoothedM_Art2)
+    locMinM_Art2 = localMinOP2(smoothedM_Art2)
+    plt.plot(smoothedM_Art2,label="WINDOWED FILTER ART2")
+    #plt.vlines(critM_Art,30,98,colors='lightcoral')
+    plt.vlines(locMaxM_Art2,30,98,colors='green')
+    plt.vlines(locMinM_Art2,30,98,colors='yellow')
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Filtered2)")
+    plt.legend()
+    k += 1
+    
+    
+    plt.figure(k)
+    plt.plot(smoothedM_Art[0:300],label="WINDOWED FILTER ART")
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.legend()
