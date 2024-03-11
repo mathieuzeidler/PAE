@@ -20,19 +20,28 @@ def windowedSmoothing(x, winSize, tol, minSD):
     i = len(x)
     length = len(x)
     smoothedSig = np.array([])
-
+    semiWin = round(winSize/2)
     while i - winSize >= 0:
-        current_slice = x[length - i:length - i + winSize]
-        valid_values = current_slice[~np.isnan(current_slice)]
-
+        imin = length - i;
+        imax = length - i + winSize;
+        current_slice = x[imin:imax]
+        #valid_values = current_slice[~np.isnan(current_slice)] we shoukd filter out NaN values before filtering
+        valid_values = current_slice
+        if imin>0:
+            valid_values = np.concatenate((x[imin-semiWin:imin],valid_values))
+        upperWin = min(semiWin,length-imax)
+        if upperWin>0:
+            valid_values = np.concatenate((valid_values,x[imax:imax+upperWin]))
         if len(valid_values) > 0:
             sdML = np.std(valid_values)
             
             if sdML > 0:
                 sdML = sdML + minSD * (sdML < tol)
                 smoothed_slice = gaussian_filter1d(valid_values, sigma=sdML, mode='reflect')
-                smoothedSig = np.concatenate((smoothedSig, smoothed_slice))
-
+                if imin>0:
+                    smoothedSig = np.concatenate((smoothedSig, smoothed_slice[semiWin:semiWin+imax-imin]))
+                else:
+                    smoothedSig = np.concatenate((smoothedSig, smoothed_slice[:imax]))
         i = i - winSize
 
     if i > 0:
@@ -216,16 +225,22 @@ if M_ART.size > 0:
     k += 1
     
     plt.figure(k)
-    smoothedM_Art = windowedSmoothing(M_ART[1000000:1001001],1000,0.1,4)
-    smoothedM_Art2 = symiirorder2(M_ART[1000000:1001001],)
+    smoothedM_Art = windowedSmoothing(M_ART[2002000:2004001],200,0.1,4)
     dxM_Art = finiteDiffDiscrete(smoothedM_Art)
     critM_Art = localMaxPos(dxM_Art,0.5e-2)
     locMaxM_Art = localMaxOP2(smoothedM_Art)
     locMinM_Art = localMinOP2(smoothedM_Art)
     plt.plot(smoothedM_Art,label="WINDOWED FILTER ART")
-    plt.vlines(critM_Art,30,98,colors='lightcoral')
+    #plt.vlines(critM_Art,30,98,colors='lightcoral')
     plt.vlines(locMaxM_Art,30,98,colors='green')
     plt.vlines(locMinM_Art,30,98,colors='yellow')
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART (Filtered)")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    plt.plot(smoothedM_Art[720:820],label="WINDOWED FILTER ART")
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Filtered)")
     plt.legend()
