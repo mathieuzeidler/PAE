@@ -52,7 +52,7 @@ def windowedSmoothingProcess(x, winSize, tol, minSD):
 
 def windowedSmoothing(x, winSize, tol, minSD):
     smoothedSignal = windowedSmoothingProcess(x, winSize, tol, minSD)
-    return gaussian_filter1d(smoothedSignal, sigma=6, mode='reflect')
+    return gaussian_filter1d(smoothedSignal, sigma=5, mode='reflect')
     
     
 
@@ -98,8 +98,19 @@ def localMaxPos(dx, tol):
 def localMinOP2(x):
     return argrelextrema(x,np.less)
 
-    
-
+def divideMaximums(x,localMax):
+    valuesMax = np.array((len(localMax),1))
+    for i in range(len(localMax)):
+        valuesMax[i] = x[localMax[i]]
+    meanM = np.mean(valuesMax)
+    absMax = np.array([])
+    locMax = np.array([])
+    for i in range(len(localMax)):
+        if valuesMax[i]>meanM:
+            absMax = np.append(absMax,localMax[i])
+        else:
+            locMax = np.append(locMax,localMax[i])
+    return np.hstack((absMax,locMax))
 ###############################################################################################################
 
     ## Reading the data localy and create the matrices to store the values
@@ -223,8 +234,8 @@ if M_ART.size > 0:
 
     # Display the original and filtered signals
     plt.figure(k)
-    plt.plot(M_ART, label='Original ART', alpha=0.5)
-    plt.plot(filtered_M_ART, label='Filtered ART', linewidth=2)
+    plt.plot(M_ART[1000000:1002001], label='Original ART', alpha=0.5)
+    plt.plot(filtered_M_ART[1000000:1002001], label='Filtered ART', linewidth=2)
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART")
     plt.title("Original vs. Filtered SNUADC/ART Signal")
@@ -232,7 +243,7 @@ if M_ART.size > 0:
     k += 1
     
     plt.figure(k)
-    smoothedM_Art = windowedSmoothing(M_ART[2002000:2004001],200,0.1,4)
+    smoothedM_Art = windowedSmoothing(M_ART[1000000:1002001],75,0.1,4)
     dxM_Art = finiteDiffDiscrete(smoothedM_Art)
     critM_Art = localMaxPos(dxM_Art,0.5e-2)
     locMaxM_Art = localMaxOP2(smoothedM_Art)
@@ -246,19 +257,29 @@ if M_ART.size > 0:
     plt.legend()
     k += 1
     
+    # Display the original and filtered signals
     plt.figure(k)
-    smoothedM_Art2 = gaussian_filter1d(smoothedM_Art, sigma=6, mode='reflect')
-    dxM_Art = finiteDiffDiscrete(smoothedM_Art)
-    locMaxM_Art2 = localMaxOP2(smoothedM_Art2)
-    locMinM_Art2 = localMinOP2(smoothedM_Art2)
-    plt.plot(smoothedM_Art2,label="WINDOWED FILTER ART2")
-    #plt.vlines(critM_Art,30,98,colors='lightcoral')
-    plt.vlines(locMaxM_Art2,30,98,colors='green')
-    plt.vlines(locMinM_Art2,30,98,colors='yellow')
+    plt.plot(M_ART[1000000:1002001], label='Original ART', alpha=0.5)
+    plt.plot(smoothedM_Art, label='Filtered ART', linewidth=2)
     plt.xlabel("t")
-    plt.ylabel("SNUADC/ART (Filtered2)")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
     plt.legend()
     k += 1
+    
+    # plt.figure(k)
+    # smoothedM_Art2 = gaussian_filter1d(smoothedM_Art, sigma=6, mode='reflect')
+    # dxM_Art = finiteDiffDiscrete(smoothedM_Art)
+    # locMaxM_Art2 = localMaxOP2(smoothedM_Art2)
+    # locMinM_Art2 = localMinOP2(smoothedM_Art2)
+    # plt.plot(smoothedM_Art2,label="WINDOWED FILTER ART2")
+    # #plt.vlines(critM_Art,30,98,colors='lightcoral')
+    # plt.vlines(locMaxM_Art2,30,98,colors='green')
+    # plt.vlines(locMinM_Art2,30,98,colors='yellow')
+    # plt.xlabel("t")
+    # plt.ylabel("SNUADC/ART (Filtered2)")
+    # plt.legend()
+    # k += 1
     
     
     plt.figure(k)
@@ -291,6 +312,35 @@ if M_ART.size > 0:
     plt.plot
     plt.xlabel("t")
     plt.ylabel("SNUADC/ART (Derivative)")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    corr = np.correlate(smoothedM_Art, smoothedM_Art,mode='full')
+    plt.plot(corr, label='correlation', alpha=0.5)
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    meanART = np.mean(M_ART)
+    plt.plot(filtered_M_ART, label='correlation', alpha=0.5)
+    plt.hlines(meanART,0,6e6)
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
+    plt.legend()
+    k += 1
+    
+    plt.figure(k)
+    meanART = np.mean(M_ART)
+    plt.plot(filtered_M_ART[2000000], label='correlation', alpha=0.5)
+    plt.hlines(meanART,0,6e6)
+    plt.xlabel("t")
+    plt.ylabel("SNUADC/ART")
+    plt.title("Original vs. Filtered SNUADC/ART Signal")
     plt.legend()
     k += 1
     
