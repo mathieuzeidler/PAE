@@ -107,7 +107,6 @@ def divideMaximums(x,localMax):
     absMax = np.array([])
     locMax = np.array([])
     for i in range(len(localMax)):
-        o = valuesMax[i]
         if valuesMax[i]>meanM:
             absMax = np.append(absMax,localMax[i])
         else:
