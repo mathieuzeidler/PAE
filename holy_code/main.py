@@ -18,7 +18,6 @@ if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
 
-# these are data from Ramses
 testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
 test = testObj.get_track_names()
 
@@ -61,14 +60,10 @@ calculate_statistics(M_ART, "M_ART")
 
 ###################################################################################################
     
-    ## Calculate the integral of the filtred signal (trapz method)
+    ## Calculate the integral of the filtred signal (trapz method) between max1 and max2
 
 #####################################################################################################
     
-    
-# Calculate the integral of the filtered ART signal between 2 maximums
-    
-# max1 = 365 and max2 = 805
 max1 = 365
 max2 = 805
 if M_ART.size > 0 and max1 < max2:
@@ -76,5 +71,5 @@ if M_ART.size > 0 and max1 < max2:
     integral_M_ART = np.trapz(sliced_M_ART)
     print(f"\nIntegral of the filtered ART signal between max1 and max2: {-integral_M_ART}")
 
-# input("Do you want to plot ? (y/n): ").lower() == 'y' :
+# comment to not display the plots
 plt.show()
