@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import filter_operation
 from calculate_stats import calculate_statistics
 from data_processing import read_data, process_data, display_matrices
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
 
 ###############################################################################################################
 
@@ -35,7 +38,7 @@ M_SPO2, M_ART, M_PLETH = process_data(setD)
 
 
 # Displaying the M matrices
-display_matrices(M_SPO2, M_ART)
+#display_matrices(M_SPO2, M_ART) uncomment to display the matrices
 
 ###############################################################################################################
     
@@ -46,7 +49,16 @@ display_matrices(M_SPO2, M_ART)
 # Filter parameters
 sigma = 5  # We can adjust it
 
-filtered_M_ART, k = filter_operation.apply_gaussian_filter(M_ART, sigma, k)
+filtered_M_ART, k, locAbsM, locAbsm, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART, sigma, k)
+
+# Get the y-values (ordinates) at the local maxima and minima
+locAbsM_values = [[smoothedM_Art[int(t)] for t in row] for row in locAbsM]
+locAbsm_values = [[smoothedM_Art[int(t)] for t in row] for row in locAbsm]
+
+#print("\nlocal minimum t : " + str(locAbsm))
+#print("local minimum value : " + str(locAbsm_values))
+#print("\nlocal maximum t : " + str(locAbsM))
+#print("local maximum value : " + str(locAbsM_values))
 
 
 ###################################################################################################
@@ -56,7 +68,37 @@ filtered_M_ART, k = filter_operation.apply_gaussian_filter(M_ART, sigma, k)
 #####################################################################################################
 
 calculate_statistics(M_SPO2, "M_SPO2")
-calculate_statistics(M_ART, "M_ART")
+
+calculate_statistics(smoothedM_Art, "M_ART")
+
+###################################################################################################
+
+    ## Check if the patient is in good health
+
+###################################################################################################
+
+# Check if max_val is greater than 140 or min_val is less than 90
+# Flatten the lists
+flat_locAbsM_values = [item for sublist in locAbsM_values for item in sublist]
+flat_locAbsm_values = [item for sublist in locAbsm_values for item in sublist]
+
+# Check if any value in flat_locAbsM_values is greater than 140
+dangerous_max_values = [value for value in flat_locAbsM_values if value > 140]
+if dangerous_max_values:
+    print('---------------------------------------------------------------------------------- ')
+    print(' ')
+    print(f"Danger ! The following maximum values are greater than 140: {dangerous_max_values}")
+    print(' ')
+    print('---------------------------------------------------------------------------------- ')
+
+# Check if any value in flat_locAbsm_values is less than 50
+dangerous_min_values = [value for value in flat_locAbsm_values if value < 50]
+if dangerous_min_values:
+    print('---------------------------------------------------------------------------------- ')
+    print(' ')
+    print(f"Danger ! The following minimum values are less than 50: {dangerous_min_values}")
+    print(' ')
+    print('---------------------------------------------------------------------------------- ')
 
 ###################################################################################################
     
@@ -67,9 +109,39 @@ calculate_statistics(M_ART, "M_ART")
 max1 = 365
 max2 = 805
 if M_ART.size > 0 and max1 < max2:
-    sliced_M_ART = M_ART[max1:max2]
+    sliced_M_ART = smoothedM_Art[max1:max2]
     integral_M_ART = np.trapz(sliced_M_ART)
-    print(f"\nIntegral of the filtered ART signal between max1 and max2: {-integral_M_ART}")
+    print(f"\nIntegral of the filtered ART signal between max1 and max2: {integral_M_ART}")
+
+
+###################################################################################################
+
+    ## Data prediction
+
+#####################################################################################################
+
+# Define your thresholds
+#lower_threshold = 60
+#upper_threshold = 100
+
+# Create a new feature matrix that includes SPO2 and previous ART values
+#X = np.column_stack((M_SPO2, M_ART))
+
+# Split the data
+#X_train, X_test, y_train, y_test = train_test_split(X, M_ART, test_size=0.2, random_state=0)
+
+# Train the model
+#model = LinearRegression()
+#model.fit(X_train, y_train)
+
+# Make predictions
+#predictions = model.predict(X_test)
+
+# Check if any predictions are outside the thresholds
+#for prediction in predictions:
+#    if prediction < lower_threshold or prediction > upper_threshold:
+#        print("Warning: predicted ART value", prediction, "is outside thresholds")
+
 
 # comment to not display the plots
 plt.show()

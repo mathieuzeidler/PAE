@@ -145,8 +145,6 @@ def apply_gaussian_filter(M_ART, sigma, k):
         plt.title("Original vs. Filtered SNUADC/ART Signal")
         plt.legend()
         k += 1
-            
-        # Update M_ART with the filtered values
-        M_ART = filtered_M_ART
 
-    return M_ART,k
+
+    return filtered_M_ART,k, locAbsM, locAbsm, smoothedM_Art
