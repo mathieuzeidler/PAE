@@ -1,8 +1,9 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
-from math_func import localMaxOP2, localMinOP2, localMaxPos, divideMaximums, divideMinimums, windowedSmoothing, finiteDiffDiscrete
+from math_func import localMaxOP2, localMinOP2, localMaxPos, divideMaximums, divideMinimums, windowedSmoothing, finiteDiffDiscrete, savgolSmoothing
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
+
 
 def apply_gaussian_filter(M_ART, sigma, k):
 
@@ -144,6 +145,24 @@ def apply_gaussian_filter(M_ART, sigma, k):
         plt.ylabel("SNUADC/ART")
         plt.title("Original vs. Filtered SNUADC/ART Signal")
         plt.legend()
+        k += 1
+
+        plt.figure(k)
+        smoothed2 = savgolSmoothing(M_ART[1000000:1002001],40,3)
+        plt.plot(M_ART[1000000:1002001], label='p', alpha=0.5)
+        plt.plot(smoothed2, label='Filtered ART', linewidth=2)
+        plt.xlabel("t")
+        plt.ylabel("MIRAR AHORA")
+        plt.title("Original vs. Filtered SNUADC/ART Signal")
+        plt.legend()
+        k += 1
+
+        plt.figure(k)
+        smoothed3 = gaussian_filter1d(smoothed2, sigma=sigma, mode='reflect')
+        plt.plot(M_ART[1000000:1002001], label='orig', alpha=0.5)
+        plt.plot(smoothed2, label='smoothed-savgol', linewidth=2, color='red')
+        plt.plot(smoothed3, label='smoothed-gauss(savgol)',color='green')
+        plt.plot(smoothedM_Art, label='smoothed-gauss(savgol)',color='black')
         k += 1
 
 
