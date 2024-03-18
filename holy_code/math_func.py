@@ -94,6 +94,7 @@ def localMaxPos(dx, tol):
 def localMinOP2(x):
     return argrelextrema(x,np.less)
 
+# works with PLETH
 def divideMaximums(x, localMax):
     valuesMax = np.zeros((len(localMax), 1))
     for i in range(len(localMax)):
@@ -115,6 +116,21 @@ def divideMaximums(x, localMax):
     return np.vstack((absMax, locMax))
 
 
+#def divideMaximums(x,localMax):
+#    valuesMax = np.zeros((len(localMax),1))
+#    for i in range(len(localMax)):
+#        valuesMax[i] = x[localMax[i]]
+#    meanM = np.mean(valuesMax)
+#    absMax = np.array([])
+#    locMax = np.array([])
+#    for i in range(len(localMax)):
+#        if valuesMax[i]>meanM:
+#            absMax = np.append(absMax,localMax[i])
+#        else:
+#            locMax = np.append(locMax,localMax[i])
+#    return np.vstack((absMax,locMax))
+
+# works with PLETH
 def divideMinimums(x, localMin):
     valuesMin = np.zeros((len(localMin), 1))
     for i in range(len(localMin)):
@@ -130,7 +146,21 @@ def divideMinimums(x, localMin):
         else:
             locMin.append(value)
     
-    absMin = np.array(absMin)
+    absMin = np.array(absMin)#
     locMin = np.array(locMin)
     
     return np.vstack((absMin, locMin))
+
+#def divideMinimums(x,localMin):
+    valuesMin = np.zeros((len(localMin),1))
+    for i in range(len(localMin)):
+        valuesMin[i] = x[localMin[i]]
+    meanM = np.mean(valuesMin)
+    absMin = np.array([])
+    locMin = np.array([])
+    for i in range(len(localMin)):
+        if valuesMin[i]<meanM:
+            absMin = np.append(absMin,localMin[i])
+        else:
+            locMin = np.append(locMin,localMin[i])
+    return np.vstack((absMin,locMin))

@@ -3,7 +3,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 
 # Assuming M_SPO2 is your feature matrix and M_ART is your target variable
-X = M_SPO2
+X = M_PLETH
 y = M_ART
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
