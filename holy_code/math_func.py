@@ -94,30 +94,43 @@ def localMaxPos(dx, tol):
 def localMinOP2(x):
     return argrelextrema(x,np.less)
 
-def divideMaximums(x,localMax):
-    valuesMax = np.zeros((len(localMax),1))
+def divideMaximums(x, localMax):
+    valuesMax = np.zeros((len(localMax), 1))
     for i in range(len(localMax)):
         valuesMax[i] = x[localMax[i]]
+    
     meanM = np.mean(valuesMax)
-    absMax = np.array([])
-    locMax = np.array([])
-    for i in range(len(localMax)):
-        if valuesMax[i]>meanM:
-            absMax = np.append(absMax,localMax[i])
+    absMax = []
+    locMax = []
+    
+    for value, index in zip(valuesMax, localMax):
+        if value > meanM:
+            absMax.append(value)
         else:
-            locMax = np.append(locMax,localMax[i])
-    return np.vstack((absMax,locMax))
+            locMax.append(value)
+    
+    absMax = np.array(absMax)
+    locMax = np.array(locMax)
+    
+    return np.vstack((absMax, locMax))
 
-def divideMinimums(x,localMin):
-    valuesMin = np.zeros((len(localMin),1))
+
+def divideMinimums(x, localMin):
+    valuesMin = np.zeros((len(localMin), 1))
     for i in range(len(localMin)):
         valuesMin[i] = x[localMin[i]]
+    
     meanM = np.mean(valuesMin)
-    absMin = np.array([])
-    locMin = np.array([])
-    for i in range(len(localMin)):
-        if valuesMin[i]<meanM:
-            absMin = np.append(absMin,localMin[i])
+    absMin = []
+    locMin = []
+    
+    for value, index in zip(valuesMin, localMin):
+        if value < meanM:
+            absMin.append(value)
         else:
-            locMin = np.append(locMin,localMin[i])
-    return np.vstack((absMin,locMin))
+            locMin.append(value)
+    
+    absMin = np.array(absMin)
+    locMin = np.array(locMin)
+    
+    return np.vstack((absMin, locMin))

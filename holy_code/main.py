@@ -49,17 +49,30 @@ M_SPO2, M_ART, M_PLETH = process_data(setD)
 # Filter parameters
 sigma = 5  # We can adjust it
 
-filtered_M_ART, k, locAbsM, locAbsm, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART, sigma, k)
+# ART
+filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART,"M_ART", sigma, k)
+# PLETH
+filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
-# Get the y-values (ordinates) at the local maxima and minima
-locAbsM_values = [[smoothedM_Art[int(t)] for t in row] for row in locAbsM]
-locAbsm_values = [[smoothedM_Art[int(t)] for t in row] for row in locAbsm]
+# Get the y-values (ordinates) at the local maxima and minima for ART
+locAbsM_values_ART = [[smoothedM_Art[int(t)] for t in row] for row in locAbsM_ART]
+locAbsm_values_ART = [[smoothedM_Art[int(t)] for t in row] for row in locAbsm_ART]
 
-#print("\nlocal minimum t : " + str(locAbsm))
-#print("local minimum value : " + str(locAbsm_values))
-#print("\nlocal maximum t : " + str(locAbsM))
-#print("local maximum value : " + str(locAbsM_values))
+# Get the y-values (ordinates) at the local maxima and minima for PLETH
+locAbsM_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbsM_PLETH]
+locAbsm_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbsm_PLETH]
 
+#ART
+print("\nlocal minimum t : " + str(locAbsm_ART))
+print("local minimum value : " + str(locAbsm_values_ART))
+print("\nlocal maximum t : " + str(locAbsM_ART))
+print("local maximum value : " + str(locAbsM_values_ART))
+
+#PLETH
+print("\nlocal minimum t : " + str(locAbsm_PLETH))
+print("local minimum value : " + str(locAbsm_values_PLETH))
+print("\nlocal maximum t : " + str(locAbsM_PLETH))
+print("local maximum value : " + str(locAbsM_values_PLETH))
 
 ###################################################################################################
     
@@ -67,7 +80,7 @@ locAbsm_values = [[smoothedM_Art[int(t)] for t in row] for row in locAbsm]
 
 #####################################################################################################
 
-calculate_statistics(M_SPO2, "M_SPO2")
+calculate_statistics(smoothedM_Pleth, "M_PLETH")
 
 calculate_statistics(smoothedM_Art, "M_ART")
 
@@ -79,8 +92,8 @@ calculate_statistics(smoothedM_Art, "M_ART")
 
 # Check if max_val is greater than 140 or min_val is less than 90
 # Flatten the lists
-flat_locAbsM_values = [item for sublist in locAbsM_values for item in sublist]
-flat_locAbsm_values = [item for sublist in locAbsm_values for item in sublist]
+flat_locAbsM_values = [item for sublist in locAbsM_values_ART for item in sublist]
+flat_locAbsm_values = [item for sublist in locAbsm_values_ART for item in sublist]
 
 # Check if any value in flat_locAbsM_values is greater than 140
 dangerous_max_values = [value for value in flat_locAbsM_values if value > 140]
@@ -102,7 +115,7 @@ if dangerous_min_values:
 
 ###################################################################################################
     
-    ## Calculate the integral of the filtred signal (trapz method) between max1 and max2
+    ## Calculate the integral of the filtred signal (trapz method) between max1 and max2 for ART
 
 #####################################################################################################
     
@@ -113,35 +126,21 @@ if M_ART.size > 0 and max1 < max2:
     integral_M_ART = np.trapz(sliced_M_ART)
     print(f"\nIntegral of the filtered ART signal between max1 and max2: {integral_M_ART}")
 
-
 ###################################################################################################
-
-    ## Data prediction
+    
+    ## Calculate the integral of the filtred signal (trapz method) between max1 and max2 for PLETH
 
 #####################################################################################################
+    
+max1 = 180
+max2 = 610
+if M_ART.size > 0 and max1 < max2:
+    sliced_M_PLETH = smoothedM_Pleth[max1:max2]
+    integral_M_PLETH = np.trapz(sliced_M_PLETH)
+    print(f"\nIntegral of the filtered PLETH signal between max1 and max2: {integral_M_PLETH}")
 
-# Define your thresholds
-#lower_threshold = 60
-#upper_threshold = 100
+# Ajuster automatiquement les paramètres de mise en page pour éviter le chevauchement
+plt.tight_layout()
 
-# Create a new feature matrix that includes SPO2 and previous ART values
-#X = np.column_stack((M_SPO2, M_ART))
-
-# Split the data
-#X_train, X_test, y_train, y_test = train_test_split(X, M_ART, test_size=0.2, random_state=0)
-
-# Train the model
-#model = LinearRegression()
-#model.fit(X_train, y_train)
-
-# Make predictions
-#predictions = model.predict(X_test)
-
-# Check if any predictions are outside the thresholds
-#for prediction in predictions:
-#    if prediction < lower_threshold or prediction > upper_threshold:
-#        print("Warning: predicted ART value", prediction, "is outside thresholds")
-
-
-# comment to not display the plots
+# Afficher le plot
 plt.show()

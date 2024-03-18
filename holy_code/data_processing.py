@@ -42,12 +42,12 @@ def process_data(setD):
                 if M_PLETH.size == 0:
                     M_PLETH = values
                 else:
-                    M_PLETH = np.vstack((M_SPO2, values))
+                    M_PLETH = np.vstack((M_PLETH, values))
 
 
     return M_SPO2, M_ART, M_PLETH
 
-def display_matrices(M_SPO2, M_ART):
+def display_matrices(M_SPO2, M_ART, M_PLETH):
     if M_SPO2.size > 0:
         print("Matrix M_SPO2:")
         print(M_SPO2)
@@ -55,3 +55,7 @@ def display_matrices(M_SPO2, M_ART):
     if M_ART.size > 0:
         print("\nMatrix M_ART:")
         print(M_ART)
+
+    if M_PLETH.size > 0:
+        print("\nMatrix M_PLETH:")
+        print(M_PLETH)
