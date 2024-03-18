@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
+from scipy.signal import medfilt
+from scipy.signal import wiener
 from math_func import localMaxOP2, localMinOP2, localMaxPos, divideMaximums, divideMinimums, windowedSmoothing, finiteDiffDiscrete, savgolSmoothing
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
@@ -10,7 +12,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
     # Apply Gaussian filter to ART signal
     if M_SIGNAL.size > 0 and signal_name == "M_ART" :
         filtered_M_SIGNAL = gaussian_filter1d(M_SIGNAL, sigma=sigma, mode='reflect')
-
+        #filtered_M_SIGNAL = medfilt(M_SIGNAL, kernel_size=5
+        #filtered_M_SIGNAL = wiener(M_SIGNAL, mysize=5, noise=0.5) 
         # Display the filtered ART signal
         plt.figure(k)
         plt.plot(filtered_M_SIGNAL[1000000:1002001], label='Filtered ART')
@@ -168,7 +171,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
     # Apply Gaussian filter to PLETH signal
     if M_SIGNAL.size > 0 and signal_name == "M_PLETH" :
         filtered_M_SIGNAL = gaussian_filter1d(M_SIGNAL, sigma=sigma, mode='reflect')
-
+        #filtered_M_SIGNAL = medfilt(M_SIGNAL, kernel_size=5)
+        #filtered_M_SIGNAL = wiener(M_SIGNAL, mysize=5, noise=0.5)
         # Display the filtered ART signal
         plt.figure(k)
         plt.plot(filtered_M_SIGNAL[1000000:1002001], label='Filtered PLETH')
