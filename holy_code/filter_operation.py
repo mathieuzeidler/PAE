@@ -152,7 +152,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #k += 1
 
         plt.figure(k)
-        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3)
+        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
         plt.plot(M_SIGNAL[1000000:1002001], label='p', alpha=0.5)
         plt.plot(smoothed2, label='Filtered ART', linewidth=2)
         plt.xlabel("t")
@@ -196,11 +196,12 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
 
         plt.figure(k)
         smoothedM_Signal = windowedSmoothing(M_SIGNAL[1000000:1002001],75,0.1,4)
-        dxM_Signal = finiteDiffDiscrete(smoothedM_Signal)
+        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
+        dxM_Signal = finiteDiffDiscrete(smoothed2)
         critM_Signal = localMaxPos(dxM_Signal,0.5e-2)
-        locMaxM_Art = localMaxOP2(smoothedM_Signal)
-        locMinM_Art = localMinOP2(smoothedM_Signal)
-        plt.plot(smoothedM_Signal,label="WINDOWED FILTER ART/PLETH")
+        locMaxM_Art = localMaxOP2(smoothed2)
+        locMinM_Art = localMinOP2(smoothed2)
+        plt.plot(smoothed2,label="WINDOWED FILTER ART/PLETH")
         #plt.vlines(critM_Art,30,98,colors='lightcoral')
         plt.vlines(locMaxM_Art,30,98,colors='green')
         plt.vlines(locMinM_Art,30,98,colors='yellow')
@@ -296,8 +297,10 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.legend()
         #k += 1
         
-        locAbsM = divideMaximums(smoothedM_Signal,locMaxM_Art[0])
-        locAbsm = divideMinimums(smoothedM_Signal,locMinM_Art[0])
+        
+
+        locAbsM = divideMaximums(smoothed2,locMaxM_Art[0])
+        locAbsm = divideMinimums(smoothed2,locMinM_Art[0])
         #plt.figure(k)
         #meanSIGNAL= np.mean(M_SIGNAL)
         #plt.plot(smoothedM_Signal, label='smoothed')
@@ -312,7 +315,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #k += 1
 
         plt.figure(k)
-        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3)
+        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
         plt.plot(M_SIGNAL[1000000:1002001], label='p', alpha=0.5)
         plt.plot(smoothed2, label='Filtered PLETH', linewidth=2)
         plt.xlabel("t")
