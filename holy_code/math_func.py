@@ -49,8 +49,9 @@ def windowedSmoothing(x, winSize, tol, minSD):
     smoothedSignal = windowedSmoothingProcess(x, winSize, tol, minSD)
     return gaussian_filter1d(smoothedSignal, sigma=5, mode='reflect')
     
-def savgolSmoothing (x, winL, ord)  :
-    return savgol_filter(x,winL,ord)  
+def savgolSmoothing (x, winL, ord, sigmaD)  :
+    smooth = savgol_filter(x,winL,ord)
+    return gaussian_filter1d(smooth, sigma=sigmaD, mode='reflect')
 
 ###############################################################################################################
 
