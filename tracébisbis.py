@@ -57,7 +57,7 @@ for values, name in zip(all_values, names):
     plt.subplots_adjust(left=0.15)
     plt.xlabel('Probabilité (p)')
     plt.ylabel(name)
-    plt.title(f'Courbe de {name} en fonction de p avec IC (90%) pour {s} sources')
+    plt.title(f'Curve of {name} as a function of p with CI (90%) for {s} sources')
     # plt.grid(True)  # Commenter ou supprimer cette ligne pour enlever le quadrillage
     plt.show()
 
