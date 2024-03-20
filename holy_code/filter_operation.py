@@ -135,9 +135,9 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.title("Original vs. Filtered SNUADC/ART Signal")
         #plt.legend()
         #k += 1
-        
-        locAbsM = divideMaximums(smoothedM_Signal,locMaxM_Art[0])
-        locAbsm = divideMinimums(smoothedM_Signal,locMinM_Art[0])
+        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        locAbsM = divideMaximums(smoothed5,locMaxM_Art[0])
+        locAbsm = divideMinimums(smoothed5,locMinM_Art[0])
         #plt.figure(k)
         #meanSIGNAL= np.mean(M_SIGNAL)
         #plt.plot(smoothedM_Signal, label='smoothed')
@@ -314,9 +314,9 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #k += 1
         
         
-
-        locAbsM = divideMaximums(smoothed2,locMaxM_Art[0])
-        locAbsm = divideMinimums(smoothed2,locMinM_Art[0])
+        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        locAbsM = divideMaximums(smoothed5,locMaxM_Art[0])
+        locAbsm = divideMinimums(smoothed5,locMinM_Art[0])
         #plt.figure(k)
         #meanSIGNAL= np.mean(M_SIGNAL)
         #plt.plot(smoothedM_Signal, label='smoothed')
