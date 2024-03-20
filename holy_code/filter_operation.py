@@ -166,7 +166,17 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
         plt.plot(smoothed2, label='smoothed-savgol', linewidth=2, color='red')
         plt.plot(smoothed3, label='smoothed-gauss(savgol)',color='green')
-        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black')
+        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black', alpha=0.5)
+        k += 1
+
+        plt.figure(k)
+        smoothed4= savgolSmoothing(M_SIGNAL[1000000:1002001],8,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
+        plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='red')
+        plt.plot(smoothed5, label='smoothed-gauss(savgol)',color='green')
+        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black', alpha=0.5)
+        plt.title("EEEEEEE")
         k += 1
 
     # Apply Gaussian filter to PLETH signal
@@ -329,7 +339,17 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
         plt.plot(smoothed2, label='smoothed-savgol', linewidth=2, color='red')
         plt.plot(smoothed3, label='smoothed-gauss(savgol)',color='green')
-        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black')
+        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black', alpha=0.5)
+        k += 1
+
+        plt.figure(k)
+        smoothed4= savgolSmoothing(M_SIGNAL[1000000:1002001],8,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
+        plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='red')
+        plt.plot(smoothed5, label='smoothed-gauss(savgol)',color='green')
+        plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black', alpha=0.5)
+        plt.title("EEEEEEE")
         k += 1
 
     return filtered_M_SIGNAL,k, locAbsM, locAbsm, smoothedM_Signal
