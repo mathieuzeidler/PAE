@@ -179,6 +179,12 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         plt.title("EEEEEEE")
         k += 1
 
+        plt.figure(k)
+        dx5 = finiteDiffDiscrete(smoothed5)
+        plt.plot(dx5, label='smoothed-savgol', linewidth=2, color='red')
+        plt.title("EEEEEEE")
+        k += 1
+
     # Apply Gaussian filter to PLETH signal
     if M_SIGNAL.size > 0 and signal_name == "M_PLETH" :
         filtered_M_SIGNAL = gaussian_filter1d(M_SIGNAL, sigma=sigma, mode='reflect')
@@ -349,6 +355,12 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='red')
         plt.plot(smoothed5, label='smoothed-gauss(savgol)',color='green')
         plt.plot(smoothedM_Signal, label='smoothed-gauss(savgol)',color='black', alpha=0.5)
+        plt.title("EEEEEEE")
+        k += 1
+
+        plt.figure(k)
+        dx5 = finiteDiffDiscrete(smoothed5)
+        plt.plot(dx5, label='smoothed-savgol', linewidth=2, color='red')
         plt.title("EEEEEEE")
         k += 1
 
