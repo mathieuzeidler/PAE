@@ -8,6 +8,7 @@ from data_processing import read_data, process_data, display_matrices
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+from correlate_minmax import corrMaxMain
 
 ###############################################################################################################
 
@@ -53,6 +54,9 @@ sigma = 5  # We can adjust it
 filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART,"M_ART", sigma, k)
 # PLETH
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
+
+#Correlations:
+corrMaxMain(M_ART,M_PLETH,2000,sigma)
 
 # Get the y-values (ordinates) at the local maxima and minima for ART
 locAbsM_values_ART = [[smoothedM_Art[int(t)] for t in row] for row in locAbsM_ART]
