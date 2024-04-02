@@ -3,7 +3,11 @@ import math_func as mf
 import matplotlib.pyplot as plt
 
 def corrMax(x,sigma):
-    smoothed = mf.savgolSmoothing(x,min(100,len(x)/2),2,sigma)
+    smoothed = []
+    if len(x)<100:
+        smoothed = mf.gauss(x,sigma)
+    else:
+        smoothed = mf.savgolSmoothing(x,100,2,sigma)
     smoothedMax = mf.localMaxOP2(smoothed)
     smoothedMin = mf.localMinOP2(smoothed)
     absMaxSmoothed = mf.excludeMaximums(smoothed,smoothedMax[0])
@@ -47,4 +51,19 @@ def corrMaxMain(x,y,winSize,sigma):
     minimumsVectY = np.array(minimumsVectY)
     print("MAXX")
     print(maximumsVectX)
+    print(len(maximumsVectX))
+    print(maximumsVectX[1000])
+    print("MINX")
+    print(minimumsVectX)
+    print(len(minimumsVectX))
+    print(minimumsVectX[1000])
+    print("MAXY")
+    print(maximumsVectY)
+    print(len(maximumsVectY))
+    print(maximumsVectY[1000])
+    print(np.max(maximumsVectY))
+    print("MINY")
+    print(minimumsVectY)
+    print(len(minimumsVectY))
+    print(minimumsVectY[1000])
     return 

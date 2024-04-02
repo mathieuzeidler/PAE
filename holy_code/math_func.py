@@ -48,7 +48,10 @@ def windowedSmoothingProcess(x, winSize, tol, minSD):
 def windowedSmoothing(x, winSize, tol, minSD):
     smoothedSignal = windowedSmoothingProcess(x, winSize, tol, minSD)
     return gaussian_filter1d(smoothedSignal, sigma=5, mode='reflect')
-    
+
+def gauss(x, sigmaD):
+    return gaussian_filter1d(x, sigma=sigmaD, mode='reflect')
+
 def savgolSmoothing (x, winL, ord, sigmaD)  :
     smooth = savgol_filter(x,winL,ord)
     return gaussian_filter1d(smooth, sigma=sigmaD, mode='reflect')
@@ -120,8 +123,6 @@ def excludeMaximums(x, locMax):
     valuesMax = []
     indexMax = []
     meanM = np.mean(x)
-    print(meanM)
-    print(locMax[1])
     for i in range(len(locMax)):
         if x[locMax[i]]>meanM:
             valuesMax.append(x[locMax[i]])
