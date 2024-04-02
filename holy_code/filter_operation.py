@@ -2,7 +2,7 @@ import numpy as np
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal import medfilt
 from scipy.signal import wiener
-from math_func import localMaxOP2, localMinOP2, localMaxPos, divideMaximums, divideMinimums, windowedSmoothing, finiteDiffDiscrete, savgolSmoothing
+from math_func import localMaxOP2, localMinOP2, localMaxPos, divideMaximums, divideMinimums, windowedSmoothing, finiteDiffDiscrete, savgolSmoothing, excludeMinimums, excludeMaximums
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 
@@ -185,6 +185,24 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         plt.title("EEEEEEE")
         k += 1
 
+        plt.figure(k)
+        plt.plot(smoothed5, label='smoothed-savgol', linewidth=2, color='red')
+        plt.hlines(np.mean(smoothed5),0,2001)
+        plt.title("EEEEEEE3333")
+        k += 1
+
+        plt.figure(k)
+        smoothed6 = savgolSmoothing(M_SIGNAL[1000000:1002001],100,2,sigma)
+        smoothed6Max = localMaxOP2(smoothed6)
+        smoothed6Min = localMinOP2(smoothed6)
+        print(smoothed6Max)
+        absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
+        absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
+        plt.plot(smoothed6)
+        plt.vlines(absMaxSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="orange")
+        plt.vlines(absMinSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="red")
+        k += 1
+
     # Apply Gaussian filter to PLETH signal
     if M_SIGNAL.size > 0 and signal_name == "M_PLETH" :
         filtered_M_SIGNAL = gaussian_filter1d(M_SIGNAL, sigma=sigma, mode='reflect')
@@ -362,6 +380,26 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         dx5 = finiteDiffDiscrete(smoothed5)
         plt.plot(dx5, label='smoothed-savgol', linewidth=2, color='red')
         plt.title("EEEEEEE")
+        k += 1
+
+        plt.figure(k)
+        smoothed6 = savgolSmoothing(M_SIGNAL[1000000:1002001],100,2,sigma)
+        plt.plot(smoothed6, label='smoothed-savgol', linewidth=2, color='red')
+        plt.hlines(np.mean(smoothed6),0,2001)
+        #plt.plot(smoothed5, label='smoothed-savgol', linewidth=2, color='green')
+        #plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='blue')
+        plt.title("Smooth6")
+        k += 1
+
+        plt.figure(k)
+        smoothed6Max = localMaxOP2(smoothed6)
+        smoothed6Min = localMinOP2(smoothed6)
+        print(smoothed6Max)
+        absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
+        absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
+        plt.plot(smoothed6)
+        plt.vlines(absMaxSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="orange")
+        plt.vlines(absMinSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="red")
         k += 1
 
     return filtered_M_SIGNAL,k, locAbsM, locAbsm, smoothedM_Signal

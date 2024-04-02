@@ -116,6 +116,51 @@ def divideMaximums(x, localMax):
     
     return np.vstack((absMax, locMax))
 
+def excludeMaximums(x, locMax):
+    valuesMax = []
+    indexMax = []
+    meanM = np.mean(x)
+    print(meanM)
+    print(locMax[1])
+    for i in range(len(locMax)):
+        if x[locMax[i]]>meanM:
+            valuesMax.append(x[locMax[i]])
+            indexMax.append(locMax[i])
+    print("VALMAX")
+    print(valuesMax)
+    print("IndMax")
+    print(indexMax)
+    print("ppp")
+    print(np.hstack((valuesMax,indexMax)))
+    print("ooo")
+    print(np.vstack((valuesMax,indexMax))[0,:])
+    valuesMax = np.array(valuesMax)
+    indexMax = np.array(indexMax)
+    return np.vstack((valuesMax,indexMax))
+
+
+#CAN BE OPTIMISED!!!
+def excludeMinimums(x,indexMax,locMin):
+    valuesMin = []
+    indexMin = []
+    for i in range(len(indexMax)-1):
+        minVal = 999
+        minInd = -1
+        found = False
+        for j in range(len(locMin)):
+            if locMin[j]>indexMax[i] and locMin[j]<indexMax[i+1]:
+                found = True
+                if minVal>x[locMin[j]]:
+                    minVal = x[locMin[j]]
+                    minInd = locMin[j]
+        if found:
+                valuesMin.append(minVal)
+                indexMin.append(minInd)    
+    valuesMin = np.array(valuesMin)
+    indexMin = np.array(indexMin)
+    print(indexMin)
+    return np.vstack((valuesMin,indexMin))
+
 
 #def divideMaximums(x,localMax):
 #    valuesMax = np.zeros((len(localMax),1))
