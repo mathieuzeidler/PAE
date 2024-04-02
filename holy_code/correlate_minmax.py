@@ -66,4 +66,17 @@ def corrMaxMain(x,y,winSize,sigma):
     print(minimumsVectY)
     print(len(minimumsVectY))
     print(minimumsVectY[1000])
+    
+    plt.figure(88)
+    plt.scatter(maximumsVectX,maximumsVectY)
+    plt.xlabel("Maximums PLETH")
+    plt.ylabel("Maximums ART")
+    plt.title("MAX SCATTERPLOT")
+    
+    plt.figure(89)
+    plt.scatter(minimumsVectX,minimumsVectY)
+    plt.xlabel("Minimums PLETH")
+    plt.ylabel("Minimums ART")
+    plt.title("MIN SCATTERPLOT")
+
     return 
