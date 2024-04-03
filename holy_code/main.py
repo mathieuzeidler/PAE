@@ -8,6 +8,7 @@ from data_processing import read_data, process_data, display_matrices
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import r2_score
 from sklearn import metrics
 from correlate_minmax import corrMaxMain
 from data_prediction import predict
@@ -61,6 +62,22 @@ filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_oper
 
 #Correlations:
 maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLETH
+
+
+# Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
+maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+model = GradientBoostingRegressor(n_estimators=100, max_depth=13)
+model.fit(maxvectY_array, maxvectX)
+# R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
+# R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
+# R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
+# R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
+
+# Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
+prediction = model.predict(maxvectY_array)
+# Calculate the R-squared score
+r2 = r2_score(maxvectX, prediction)
+print("R-squared score:", r2)
 
 ###################################################################################################
 

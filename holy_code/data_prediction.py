@@ -42,9 +42,63 @@ def predict(x, y):  # Defining the prediction function that takes features (y) a
 
 
     predictions = model.predict(X_test)  # Making predictions using the trained model on the testing data
-
+    
     print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
     print('Mean Squared Error:', metrics.mean_squared_error(y_test, predictions))  # Printing the Mean Squared Error of the predictions
     print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, predictions)))  # Printing the Root Mean Squared Error of the predictions
 
     return predictions  # Returning the predictions
+
+###############################################################################################################
+######################################### Just MALAK COMMENTS #################################################
+###############################################################################################################
+
+#Correlations:
+#cutMaximumsVectX, cutMaximumsVectY = corrMaxMain(M_ART,M_PLETH,2000,sigma)
+#cutMaximumsVectX_array = np.array(cutMaximumsVectX).reshape(-1, 1)
+# Linear regression model to predict the correlation between the ART and PLETH signals
+#correlation_coefficient = np.corrcoef(cutMaximumsVectX, cutMaximumsVectY)[0, 1]
+#print("Correlation coefficient:", correlation_coefficient)
+
+# Polynomial regression model to predict the correlation between the ART and PLETH signals
+#poly = PolynomialFeatures(degree=2)
+#cutMaximumsVectX_poly = poly.fit_transform(cutMaximumsVectX_array)
+#model = LinearRegression()
+#model.fit(cutMaximumsVectX_poly, cutMaximumsVectY)
+# y = 0.00000000e+00 + (-1.07488142e-02)*x + 1.78275323e-05*x^2 + 63.16531559476246
+# R-squared score: 0.00467589165993243
+
+# Tree regression model to predict the correlation between the ART and PLETH signals
+#model = DecisionTreeRegressor(max_depth=10) # we can adjust the depth
+#model.fit(cutMaximumsVectX_array, cutMaximumsVectY)
+#print("Depth of the tree:", model.get_depth())
+#Depth of the tree: 39 --> overfitting: the model learns the training data too well,
+#                                       including its noise and outliers,
+#                                       which can lead to poor performance on new, unseen data
+#R-squared score: 1.0 --> The model is perfectly predicting the training data
+
+#Depth of the tree: 10
+#R-squared score: 0.32915647428623396
+
+# Support Vector Regression (SVR) model to predict the correlation between the ART and PLETH signals
+#model = SVR(kernel='rbf')
+#model.fit(cutMaximumsVectX_array, cutMaximumsVectY)
+#R-squared score: 0.004523067848973272
+
+###############################################################################################################
+###############################################################################################################
+# Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
+# model = GradientBoostingRegressor(n_estimators=100, max_depth=13)
+# model.fit(cutMaximumsVectX_array, cutMaximumsVectY)
+# R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
+# R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
+# R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
+# R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
+###############################################################################################################
+###############################################################################################################
+
+# Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
+#cutMaximumsVectY_pred = model.predict(cutMaximumsVectX_array)
+# Calculate the R-squared score
+#r2 = r2_score(cutMaximumsVectY, cutMaximumsVectY_pred)
+#print("R-squared score:", r2)
