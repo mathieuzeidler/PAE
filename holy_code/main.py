@@ -25,8 +25,10 @@ if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
 
-testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
+testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 test = testObj.get_track_names()
+
+print(test)
 
 # Reading the data
 setD = read_data(test, testObj)
@@ -42,7 +44,7 @@ M_SPO2, M_ART, M_PLETH = process_data(setD)
 
 
 # Displaying the M matrices
-#display_matrices(M_SPO2, M_ART) uncomment to display the matrices
+display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
 
 ###############################################################################################################
     
@@ -82,6 +84,13 @@ print("R-squared score:", r2)
 #Predictions:
 maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
 predictions = predict(maxvectY, maxvectX) # predict x from y 
+
+maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
+model.fit(maxvectY_array,maxvectX)
+prediction = model.predict(maxvectY_array)
+r2 = metrics.r2_score(maxvectX,prediction)
+print("R-squared score:",r2)
 
 # Print predictions
 #print(predictions)
