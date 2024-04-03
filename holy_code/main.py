@@ -7,6 +7,7 @@ from calculate_stats import calculate_statistics
 from data_processing import read_data, process_data, display_matrices
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn import metrics
 from correlate_minmax import corrMaxMain
 from data_prediction import predict
@@ -66,6 +67,13 @@ maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLET
 #Predictions:
 maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
 predictions = predict(maxvectY, maxvectX) # predict x from y 
+
+maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
+model.fit(maxvectY_array,maxvectX)
+prediction = model.predict(maxvectY_array)
+r2 = metrics.r2_score(maxvectX,prediction)
+print("R-squared score:",r2)
 
 # Print predictions
 #print(predictions)
