@@ -23,8 +23,10 @@ if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
 
-testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
+testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 test = testObj.get_track_names()
+
+print(test)
 
 # Reading the data
 setD = read_data(test, testObj)
@@ -40,7 +42,7 @@ M_SPO2, M_ART, M_PLETH = process_data(setD)
 
 
 # Displaying the M matrices
-#display_matrices(M_SPO2, M_ART) uncomment to display the matrices
+display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
 
 ###############################################################################################################
     
@@ -52,9 +54,9 @@ M_SPO2, M_ART, M_PLETH = process_data(setD)
 sigma = 5  # We can adjust it
 
 # ART
-filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART,"M_ART", sigma, k)
+#filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART,"M_ART", sigma, k)
 # PLETH
-filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
+#filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
 maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLETH
