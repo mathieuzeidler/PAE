@@ -99,15 +99,8 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.ylabel("Minimums ART")
     plt.title("MIN SCATTERPLOT")
 
-    cutMaximumsVectX = []
-    cutMaximumsVectY = []
-    cutoffMaxX = np.mean(maximumsVectX)-1.4*np.std(maximumsVectX)
-    cutoffMaxY = np.mean(maximumsVectY)-1.4*np.std(maximumsVectY)
-    for i in range(len(maximumsVectX)):
-        if maximumsVectX[i]>cutoffMaxX and maximumsVectY[i]>cutoffMaxY:
-            cutMaximumsVectX.append(maximumsVectX[i])
-            cutMaximumsVectY.append(maximumsVectY[i])
-
+    cutMaximumsVectX, cutMaximumsVectY = mf.cutData2D(maximumsVectX,maximumsVectY,3)
+    cutMinimumsVectX, cutMinimumsVectY = mf.cutData2D(minimumsVectX,minimumsVectY,3)
 
     linMaxXY = linregress(cutMaximumsVectX, cutMaximumsVectY)
     plt.figure(90)
@@ -124,5 +117,18 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.xlabel("Maximums PLETH")
     plt.ylabel("Maximums ART")
     plt.title("MAX SCATTERPLOT")
+
+    linMinXY = linregress(cutMinimumsVectX, cutMinimumsVectY)
+    plt.figure(92)
+    plt.scatter(cutMinimumsVectX,cutMinimumsVectY)
+    xLinSpace = np.linspace(-200,200,1000)
+    plt.plot(xLinSpace, linMinXY.intercept + linMinXY.slope*xLinSpace, 'r', label='fitted line')
+    plt.hlines(np.mean(minimumsVectY),-200,200, colors="red")
+    plt.hlines(np.mean(minimumsVectY)-1.4*np.std(minimumsVectY),-200,200, colors="red")
+    #print("MMMMMM")
+    #print(np.mean(maximumsVectX))
+    plt.xlabel("MINIMUMS PLETH")
+    plt.ylabel("MINIMUMS ART")
+    plt.title("MIN SCATTERPLOT")
 
     return cutMaximumsVectX, cutMaximumsVectY
