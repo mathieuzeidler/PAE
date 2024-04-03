@@ -120,6 +120,7 @@ def corrMaxMain(x,y,winSize,sigma):
     print(np.mean(maximumsVectX))
     plt.vlines(np.mean(maximumsVectX),10,90, colors="orange")
     plt.vlines(np.mean(maximumsVectX)-1.4*np.std(maximumsVectX),10,90, colors="orange")
+    plt.vlines(np.mean(maximumsVectX)+1.4*np.std(maximumsVectX),10,90, colors="orange")
     plt.xlabel("Maximums PLETH")
     plt.ylabel("Maximums ART")
     plt.title("MAX SCATTERPLOT")
