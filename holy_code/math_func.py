@@ -211,3 +211,18 @@ def divideMinimums(x, localMin):
         else:
             locMin = np.append(locMin,localMin[i])
     return np.vstack((absMin,locMin))
+
+def cutData2D(x, y, deviation):
+    cutVectX = []
+    cutVectY = []
+    xMean = np.mean(x)
+    xStd = np.std(x)
+    yMean = np.mean(y)
+    yStd = np.std(y)
+    for i in range(len(x)):
+        if abs(x[i]-xMean)<deviation*xStd and abs(y[i]-yMean)<deviation*yStd:
+            cutVectX.append(x[i])
+            cutVectY.append(y[i])
+    cutVectX = np.array(cutVectX)
+    cutVectY = np.array(cutVectY)
+    return cutVectX, cutVectY
