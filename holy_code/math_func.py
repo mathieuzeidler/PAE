@@ -127,14 +127,14 @@ def excludeMaximums(x, locMax):
         if x[locMax[i]]>meanM:
             valuesMax.append(x[locMax[i]])
             indexMax.append(locMax[i])
-    print("VALMAX")
-    print(valuesMax)
-    print("IndMax")
-    print(indexMax)
-    print("ppp")
-    print(np.hstack((valuesMax,indexMax)))
-    print("ooo")
-    print(np.vstack((valuesMax,indexMax))[0,:])
+    #print("VALMAX")
+    #print(valuesMax)
+    #print("IndMax")
+    #print(indexMax)
+    #print("ppp")
+    #print(np.hstack((valuesMax,indexMax)))
+    #print("ooo")
+    #print(np.vstack((valuesMax,indexMax))[0,:])
     valuesMax = np.array(valuesMax)
     indexMax = np.array(indexMax)
     return np.vstack((valuesMax,indexMax))
@@ -159,7 +159,7 @@ def excludeMinimums(x,indexMax,locMin):
                 indexMin.append(minInd)    
     valuesMin = np.array(valuesMin)
     indexMin = np.array(indexMin)
-    print(indexMin)
+    #print(indexMin)
     return np.vstack((valuesMin,indexMin))
 
 
@@ -211,18 +211,3 @@ def divideMinimums(x, localMin):
         else:
             locMin = np.append(locMin,localMin[i])
     return np.vstack((absMin,locMin))
-
-def cutData2D(x, y, deviation):
-    cutVectX = []
-    cutVectY = []
-    xMean = np.mean(x)
-    xStd = np.std(x)
-    yMean = np.mean(y)
-    yStd = np.std(y)
-    for i in range(len(x)):
-        if abs(x[i]-xMean)<deviation*xStd and abs(y[i]-yMean)<deviation*yStd:
-            cutVectX.append(x[i])
-            cutVectY.append(y[i])
-    cutVectX = np.array(cutVectX)
-    cutVectY = np.array(cutVectY)
-    return cutVectX, cutVectY

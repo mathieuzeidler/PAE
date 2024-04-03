@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 from correlate_minmax import corrMaxMain
+from data_prediction import predict
 
 ###############################################################################################################
 
@@ -56,7 +57,28 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-corrMaxMain(M_ART,M_PLETH,2000,sigma)
+maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLETH
+
+###################################################################################################
+
+#Predictions:
+maxvectX = np.array(maxvectX).reshape(-1, 1) # reshape the data
+predictions = predict(maxvectX, maxvectY) # predict x from y 
+
+#predictions = np.array(predictions).flatten()
+
+# Print predictions
+#print(predictions)
+
+# Plot predictions
+plt.figure(figsize=(10, 6))
+plt.plot(predictions, 'r-')  # 'r-' means red line
+plt.title('Predictions of ART from PLETH')
+plt.xlabel('Time')
+plt.ylabel('Predicted Value')
+plt.show()
+
+###################################################################################################
 
 # Get the y-values (ordinates) at the local maxima and minima for ART
 locAbsM_values_ART = [[smoothedM_Art[int(t)] for t in row] for row in locAbsM_ART]
@@ -148,3 +170,4 @@ plt.tight_layout()
 
 # Afficher le plot
 plt.show()
+plt.close()
