@@ -383,7 +383,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         k += 1
 
         plt.figure(k)
-        smoothed6 = savgolSmoothing(M_SIGNAL[2000000:2002001],100,2,sigma)
+        smoothed6 = savgolSmoothing(M_SIGNAL[1000000:1002001],100,2,sigma)
         plt.plot(smoothed6, label='smoothed-savgol', linewidth=2, color='red')
         plt.hlines(np.mean(smoothed6),0,2001)
         #plt.plot(smoothed5, label='smoothed-savgol', linewidth=2, color='green')
