@@ -63,9 +63,9 @@ def corrMaxMain(x,y,winSize,sigma):
     ##MANIPULATE 
 
 
-    #print("MAXX")
-    #print(maximumsVectX)
-    #print(len(maximumsVectX))
+    print("MAXX")
+    print(maximumsVectX)
+    print(len(maximumsVectX))
     #print(maximumsVectX[1000])
     #print("MINX")
     #print(minimumsVectX)
