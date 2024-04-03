@@ -65,8 +65,6 @@ maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLET
 maxvectX = np.array(maxvectX).reshape(-1, 1) # reshape the data
 predictions = predict(maxvectX, maxvectY) # predict x from y 
 
-#predictions = np.array(predictions).flatten()
-
 # Print predictions
 #print(predictions)
 
