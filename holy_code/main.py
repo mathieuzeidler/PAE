@@ -25,7 +25,8 @@ if not os.path.exists(DOWNLOAD_DIR):
     print("Creating new directory")
     os.mkdir(DOWNLOAD_DIR)
 
-testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
+#testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 test = testObj.get_track_names()
 
 print(test)
