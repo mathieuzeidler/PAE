@@ -28,7 +28,7 @@ def process_data(setD):
                     M_SPO2 = np.vstack((M_SPO2, values))
 
         #elif dataPair[0] == 'Demo/ART':
-        elif dataPair[0] == 'Infinity/ART':
+        elif dataPair[0] == 'SNUADC/ART':
             # Adding values to the M_ART matrix without NaN
             values = dataPair[1][~np.isnan(dataPair[1])]
             if len(values) > 0:
@@ -38,7 +38,7 @@ def process_data(setD):
                     M_ART = np.vstack((M_ART, values))
 
         #elif dataPair[0] == "Demo/PLETH":
-        elif dataPair[0] == 'Infinity/PLETH':
+        elif dataPair[0] == 'SNUADC/PLETH':
             values = dataPair[1][~np.isnan(dataPair[1])]
             if len(values) > 0:
                 if M_PLETH.size == 0:
