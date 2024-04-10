@@ -68,26 +68,26 @@ maxvectY, maxvectX, minvectY, minvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) #
 # Malak parts
 
 # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
-maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
-model.fit(maxvectY_array, maxvectX)
+#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+#model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
+#model.fit(maxvectY_array, maxvectX)
 # R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
 # R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
 # R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
 # R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
 
 # Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
-prediction = model.predict(maxvectY_array)
+#prediction = model.predict(maxvectY_array)
 # Calculate the R-squared score
-r2 = r2_score(maxvectX, prediction)
-print("R-squared score:", r2)
+#r2 = r2_score(maxvectX, prediction)
+#print("R-squared score:", r2)
 
-maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
-model.fit(maxvectY_array,maxvectX)
-prediction = model.predict(maxvectY_array)
-r2 = metrics.r2_score(maxvectX,prediction)
-print("R-squared score:",r2)
+#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+#model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
+#model.fit(maxvectY_array,maxvectX)
+#prediction = model.predict(maxvectY_array)
+#r2 = metrics.r2_score(maxvectX,prediction)
+#print("R-squared score:",r2)
 
 ###################################################################################################
 
