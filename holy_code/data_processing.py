@@ -12,13 +12,16 @@ def read_data(test, testObj):
 
 #################################################################################################################
 
-def process_data(setD):
+
+#vitalDB dataset names: spo2Name-> Infinity/PLETH_SPO2, artName-> SNUADC/ART, plethName->SNUADC/PLETH
+#Demo data: names->Demo/x
+def process_data(setD,spo2Name,artName,plethName):
     M_SPO2 = np.array([])
     M_ART = np.array([])
     M_PLETH = np.array([])
 
     for dataPair in setD:
-        if dataPair[0] == 'Infinity/PLETH_SPO2':
+        if dataPair[0] == spo2Name:
             # Adding values to the M_SPO2 matrix without NaN
             values = dataPair[1][~np.isnan(dataPair[1])]
             if len(values) > 0:
@@ -27,8 +30,7 @@ def process_data(setD):
                 else:
                     M_SPO2 = np.vstack((M_SPO2, values))
 
-        elif dataPair[0] == 'Demo/ART':
-        #elif dataPair[0] == 'SNUADC/ART':
+        elif dataPair[0] == artName:
             # Adding values to the M_ART matrix without NaN
             values = dataPair[1][~np.isnan(dataPair[1])]
             if len(values) > 0:
@@ -37,8 +39,7 @@ def process_data(setD):
                 else:
                     M_ART = np.vstack((M_ART, values))
 
-        elif dataPair[0] == "Demo/PLETH":
-        #elif dataPair[0] == 'SNUADC/PLETH':
+        elif dataPair[0] == plethName:
             values = dataPair[1][~np.isnan(dataPair[1])]
             if len(values) > 0:
                 if M_PLETH.size == 0:
