@@ -63,10 +63,10 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH,M_ART,2000,sigma)
+maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH[:456000],M_ART[:456000],2000,sigma)
 
 ###################################################################################################
-# Malak parts
+# Malak parts (t'es moche)
 
 # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
 #maxvectY_array = np.array(maxvectY).reshape(-1, 1)
@@ -95,10 +95,16 @@ maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH,M_ART,2
 
 # Predictions max :
 maxvectPLETH = np.array(maxvectPLETH).reshape(-1, 1) # reshape the data
+print('                     ')
+print('MAX prediction result')
+print('\/\/\/\/\/\/\/\/\/\/\/\/')
 predictions_max = predict(maxvectPLETH, maxvectART) # predict x from y 
 
 # Predictions min :
 minvectPLETH = np.array(minvectPLETH).reshape(-1, 1) # reshape the data
+print('                     ')
+print('MIN prediction result')
+print('\/\/\/\/\/\/\/\/\/\/\/\/')
 predictions_min = predict(minvectPLETH, minvectART) # predict x from y 
 
 # Print predictions
@@ -108,7 +114,7 @@ predictions_min = predict(minvectPLETH, minvectART) # predict x from y
 plt.figure(figsize=(10, 6))
 plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
 plt.title('Predictions max of ART from PLETH')
-plt.xlabel('Time')
+plt.xlabel('Index')
 plt.ylabel('Predicted Value')
 plt.show(block=False)
 
@@ -117,7 +123,7 @@ plt.show(block=False)
 plt.figure(figsize=(10, 6))
 plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
 plt.title('Predictions min of ART from PLETH')
-plt.xlabel('Time')
+plt.xlabel('Index')
 plt.ylabel('Predicted Value')
 plt.show(block=False)
 
