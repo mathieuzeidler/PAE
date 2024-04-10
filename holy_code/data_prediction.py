@@ -90,7 +90,7 @@ def predict(x, y):  # Defining the prediction function that takes features (y) a
     model = RandomForestRegressor() # good : Mean Absolute Error: 1.9883121185203616
                                     #        Mean Squared Error: 8.487491537348799
                                     #        Root Mean Squared Error: 2.9133299739900385
-    predictionRanfomF = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model)
 
     model = GradientBoostingRegressor(n_estimators=100, max_depth=13) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
@@ -101,4 +101,6 @@ def predict(x, y):  # Defining the prediction function that takes features (y) a
                                   #        Root Mean Squared Error: 2.634448919693819
     predictionKNeighbors = usemodel(X_train,X_test,y_train,y_test,model)
 
-    return predictionGradientB
+    toReturn = {'LinearRegression':predictionLinearR,'DecissionTree':predictionDecisionT,'SVR':predictionSVR,'RandomForest':predictionRandomF,'GradientBoosting':predictionGradientB,'KNeighbors':predictionKNeighbors}
+
+    return toReturn
