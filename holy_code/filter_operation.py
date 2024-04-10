@@ -16,13 +16,13 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #filtered_M_SIGNAL = wiener(M_SIGNAL, mysize=5, noise=0.5)
          
         # Display the filtered ART signal
-        #plt.figure()
-        #plt.plot(filtered_M_SIGNAL[1000000:1002001], label='Filtered ART')
-        #plt.xlabel("t")
-        #plt.ylabel("SNUADC/ART (Filtered)")
-        #plt.title("Filtered SNUADC/ART Signal")
-        #plt.legend()
-        #plt.show(block=False)
+        plt.figure()
+        plt.plot(filtered_M_SIGNAL[1000000:1002001], label='Filtered ART')
+        plt.xlabel("t")
+        plt.ylabel("SNUADC/ART (Filtered)")
+        plt.title("Filtered SNUADC/ART Signal")
+        plt.legend()
+        plt.show(block=False)
 
         # Display the original and filtered signals
         #plt.figure()
