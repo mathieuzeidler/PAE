@@ -26,14 +26,36 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
-testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
-test = testObj.get_track_names()
+#testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+
+list_var = ['Infinity/PLETH_SPO2', 'Demo/ART', 'Demo/PLETH']
+vf = vd.VitalFile("VitalDB_data/19-3/QUI12_230718_175152.vital", list_var)
+vf.to_vital('var.vital')
+testObj = vd.read_vital("var.vital")
+
+
+# Supongamos que list_var1 es tu lista con valores NaN
+#list_var1 = vf.get_track_samples('Infinity/PLETH_SPO2', 1/60)
+#list_var2 = vf.get_track_samples('Demo/ART', 1/60)
+#list_var3 = vf.get_track_samples('Demo/PLETH', 1/60)
+
+# Usamos una comprensión de lista para filtrar los valores NaN
+#list_var1 = [x for x in list_var1 if not np.isnan(x)]
+#list_var2 = [x for x in list_var2 if not np.isnan(x)]
+#list_var3 = [x for x in list_var3 if not np.isnan(x)]
+
+#M_SPO2 = np.array(list_var1)
+#M_ART = np.array(list_var2)
+#M_PLETH = np.array(list_var3)
+
+#test = testObj.get_track_names()
+
 
 #print(test)
 
 
 # Reading the data
-setD = read_data(test, testObj)
+setD = read_data(list_var, testObj)
 
 #################################################################################################################
     

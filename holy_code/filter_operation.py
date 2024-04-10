@@ -17,7 +17,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
          
         # Display the filtered ART signal
         plt.figure()
-        plt.plot(filtered_M_SIGNAL[1000000:1002001], label='Filtered ART')
+        plt.plot(filtered_M_SIGNAL[4000:6001], label='Filtered ART')
         plt.xlabel("t")
         plt.ylabel("SNUADC/ART (Filtered)")
         plt.title("Filtered SNUADC/ART Signal")
@@ -35,7 +35,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothedM_Signal = windowedSmoothing(M_SIGNAL[1000000:1002001],75,0.1,4)
+        smoothedM_Signal = windowedSmoothing(M_SIGNAL[4000:6001],75,0.1,4)
         dxM_Signal = finiteDiffDiscrete(smoothedM_Signal)
         critM_Signal = localMaxPos(dxM_Signal,0.5e-2)
         locMaxM_Art = localMaxOP2(smoothedM_Signal)
@@ -135,7 +135,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.title("Original vs. Filtered SNUADC/ART Signal")
         #plt.legend()
         #plt.show(block=False)
-        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[4000:6001],100,3,sigma)
         locAbsM = divideMaximums(smoothed5,locMaxM_Art[0])
         locAbsm = divideMinimums(smoothed5,locMinM_Art[0])
         #plt.figure()
@@ -152,8 +152,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         plt.figure()
-        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
-        plt.plot(M_SIGNAL[1000000:1002001], label='p', alpha=0.5)
+        smoothed2 = savgolSmoothing(M_SIGNAL[4000:6001],40,3,sigma)
+        plt.plot(M_SIGNAL[4000:6001], label='p', alpha=0.5)
         plt.plot(smoothed2, label='Filtered ART', linewidth=2)
         plt.xlabel("t")
         plt.ylabel("MIRAR AHORA")
@@ -170,8 +170,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothed4= savgolSmoothing(M_SIGNAL[1000000:1002001],8,3,sigma)
-        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        smoothed4= savgolSmoothing(M_SIGNAL[4000:6001],8,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[4000:6001],100,3,sigma)
         #plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
         #plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='red')
         #plt.plot(smoothed5, label='smoothed-gauss(savgol)',color='green')
@@ -192,7 +192,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothed6 = savgolSmoothing(M_SIGNAL[1000000:1002001],100,2,sigma)
+        smoothed6 = savgolSmoothing(M_SIGNAL[4000:6001],100,2,sigma)
         smoothed6Max = localMaxOP2(smoothed6)
         smoothed6Min = localMinOP2(smoothed6)
         #print(smoothed6Max)
@@ -229,8 +229,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothedM_Signal = windowedSmoothing(M_SIGNAL[1000000:1002001],75,0.1,4)
-        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
+        smoothedM_Signal = windowedSmoothing(M_SIGNAL[4000:6001],75,0.1,4)
+        smoothed2 = savgolSmoothing(M_SIGNAL[4000:6001],40,3,sigma)
         dxM_Signal = finiteDiffDiscrete(smoothed2)
         critM_Signal = localMaxPos(dxM_Signal,0.5e-2)
         locMaxM_Art = localMaxOP2(smoothed2)
@@ -332,7 +332,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
         
         
-        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[4000:6001],100,3,sigma)
         locAbsM = divideMaximums(smoothed5,locMaxM_Art[0])
         locAbsm = divideMinimums(smoothed5,locMinM_Art[0])
         #plt.figure()
@@ -349,8 +349,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         plt.figure()
-        smoothed2 = savgolSmoothing(M_SIGNAL[1000000:1002001],40,3,sigma)
-        plt.plot(M_SIGNAL[1000000:1002001], label='p', alpha=0.5)
+        smoothed2 = savgolSmoothing(M_SIGNAL[4000:6001],40,3,sigma)
+        plt.plot(M_SIGNAL[4000:6001], label='p', alpha=0.5)
         plt.plot(smoothed2, label='Filtered PLETH', linewidth=2)
         plt.xlabel("t")
         plt.ylabel("MIRAR AHORA")
@@ -367,8 +367,8 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothed4= savgolSmoothing(M_SIGNAL[1000000:1002001],8,3,sigma)
-        smoothed5= savgolSmoothing(M_SIGNAL[1000000:1002001],100,3,sigma)
+        smoothed4= savgolSmoothing(M_SIGNAL[4000:6001],8,3,sigma)
+        smoothed5= savgolSmoothing(M_SIGNAL[4000:6001],100,3,sigma)
         #plt.plot(M_SIGNAL[1000000:1002001], label='orig', alpha=0.5)
         #plt.plot(smoothed4, label='smoothed-savgol', linewidth=2, color='red')
         #plt.plot(smoothed5, label='smoothed-gauss(savgol)',color='green')
@@ -383,7 +383,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         #plt.show(block=False)
 
         #plt.figure()
-        smoothed6 = savgolSmoothing(M_SIGNAL[1000000:1002001],100,2,sigma)
+        smoothed6 = savgolSmoothing(M_SIGNAL[4000:6001],100,2,sigma)
         #plt.plot(smoothed6, label='smoothed-savgol', linewidth=2, color='red')
         #plt.hlines(np.mean(smoothed6),0,2001)
         #plt.plot(smoothed5, label='smoothed-savgol', linewidth=2, color='green')
