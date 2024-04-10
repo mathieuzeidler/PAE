@@ -41,7 +41,7 @@ setD = read_data(test, testObj)
 #################################################################################################################
 
 k = 1
-M_SPO2, M_ART, M_PLETH = process_data(setD)
+M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Demo/ART', 'Demo/PLETH')
 
 
 # Displaying the M matrices
