@@ -8,10 +8,11 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.neighbors import KNeighborsRegressor
 
-def usemodel(X_train,X_test,y_train,y_test,model):
+def usemodel(X_train,X_test,y_train,y_test,model,name):
 
     model.fit(X_train, y_train)  # Training the model using the training data
     predictions = model.predict(X_test)  # Making predictions using the trained model on the testing data
+    print("------Results of ",name,":--------")
     print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
     print('Mean Squared Error:', metrics.mean_squared_error(y_test, predictions))  # Printing the Mean Squared Error of the predictions
     print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, predictions)))  # Printing the Root Mean Squared Error of the predictions
@@ -78,28 +79,28 @@ def predict(x, y):  # Defining the prediction function that takes features (y) a
     model = LinearRegression() # Mean Absolute Error: 2.2465127537930596
                                # Mean Squared Error: 10.928526268996647
                                # Root Mean Squared Error: 3.3058321598345923
-    predictionLinearR  = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionLinearR  = usemodel(X_train,X_test,y_train,y_test,model,"Linear Regression")
     model = DecisionTreeRegressor() # Mean Absolute Error: 2.2465127537930596
                                     # Mean Squared Error: 10.928526268996647
                                     # Root Mean Squared Error: 3.3058321598345923 
-    predictionDecisionT  = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionDecisionT  = usemodel(X_train,X_test,y_train,y_test,model,"Decision Tree Regressor")
     model = SVR() # Mean Absolute Error: 1.9616585887477098
                   # Mean Squared Error: 8.271744394120887
                   # Root Mean Squared Error: 2.876064045552687
-    predictionSVR  = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionSVR  = usemodel(X_train,X_test,y_train,y_test,model, "SVR")
     model = RandomForestRegressor() # good : Mean Absolute Error: 1.9883121185203616
                                     #        Mean Squared Error: 8.487491537348799
                                     #        Root Mean Squared Error: 2.9133299739900385
-    predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model, "Random Forest Regressor")
 
     model = GradientBoostingRegressor(n_estimators=100, max_depth=13) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
                                         #        Root Mean Squared Error: 2.4527025070991977
-    predictionGradientB = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionGradientB = usemodel(X_train,X_test,y_train,y_test,model,"Gradient Boosting Regressor")
     model = KNeighborsRegressor() # good : Mean Absolute Error: 1.7536857020247725
                                   #        Mean Squared Error: 6.940321110475928
                                   #        Root Mean Squared Error: 2.634448919693819
-    predictionKNeighbors = usemodel(X_train,X_test,y_train,y_test,model)
+    predictionKNeighbors = usemodel(X_train,X_test,y_train,y_test,model, "KNeaighbors Regressor")
 
     toReturn = {'LinearRegression':predictionLinearR,'DecissionTree':predictionDecisionT,'SVR':predictionSVR,'RandomForest':predictionRandomF,'GradientBoosting':predictionGradientB,'KNeighbors':predictionKNeighbors}
 
