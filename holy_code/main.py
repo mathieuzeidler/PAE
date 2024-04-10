@@ -26,7 +26,8 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
-testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+#testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+testObj = vd.read_vital("VitalDB_data/9-3/mj6uua9n3_240405_090144.vital")
 test = testObj.get_track_names()
 
 #print(test)
@@ -41,7 +42,7 @@ setD = read_data(test, testObj)
 #################################################################################################################
 
 k = 1
-M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Demo/ART', 'Demo/PLETH')
+M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
 
 
 # Displaying the M matrices
