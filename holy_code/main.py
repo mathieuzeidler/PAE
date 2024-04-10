@@ -62,8 +62,10 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-maxvectY, maxvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) # y => ART, x => PLETH
+maxvectY, maxvectX, minvectY, minvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) # y => ART, x => PLETH
 
+###################################################################################################
+# Malak parts
 
 # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
 maxvectY_array = np.array(maxvectY).reshape(-1, 1)
@@ -80,12 +82,6 @@ prediction = model.predict(maxvectY_array)
 r2 = r2_score(maxvectX, prediction)
 print("R-squared score:", r2)
 
-###################################################################################################
-
-#Predictions:
-maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
-predictions = predict(maxvectY, maxvectX) # predict x from y 
-
 maxvectY_array = np.array(maxvectY).reshape(-1, 1)
 model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
 model.fit(maxvectY_array,maxvectX)
@@ -93,13 +89,32 @@ prediction = model.predict(maxvectY_array)
 r2 = metrics.r2_score(maxvectX,prediction)
 print("R-squared score:",r2)
 
+###################################################################################################
+
+
+# Predictions max :
+maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
+predictions_max = predict(maxvectY, maxvectX) # predict x from y 
+
+# Predictions min :
+minvectY = np.array(minvectY).reshape(-1, 1) # reshape the data
+predictions_min = predict(minvectY, minvectX) # predict x from y 
+
 # Print predictions
 #print(predictions)
 
-# Plot predictions
+# Plot predictions max
 plt.figure(figsize=(10, 6))
-plt.plot(predictions, 'r-')  # 'r-' means red line
-plt.title('Predictions of ART from PLETH')
+plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
+plt.title('Predictions max of ART from PLETH')
+plt.xlabel('Time')
+plt.ylabel('Predicted Value')
+plt.show()
+
+# Plot predictions min
+plt.figure(figsize=(10, 6))
+plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
+plt.title('Predictions min of ART from PLETH')
 plt.xlabel('Time')
 plt.ylabel('Predicted Value')
 plt.show()
