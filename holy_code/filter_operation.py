@@ -65,7 +65,7 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         # locMaxM_Art2 = localMaxOP2(smoothedM_Art2)
         # locMinM_Art2 = localMinOP2(smoothedM_Art2)
         # plt.plot(smoothedM_Art2,label="WINDOWED FILTER ART2")
-        # #plt.vlines(critM_Art,30,98,colors='lightcoral')
+        # plt.vlines(critM_Art,30,98,colors='lightcoral')
         # plt.vlines(locMaxM_Art2,30,98,colors='green')
         # plt.vlines(locMinM_Art2,30,98,colors='yellow')
         # plt.xlabel("t")

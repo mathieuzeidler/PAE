@@ -31,7 +31,6 @@ test = testObj.get_track_names()
 
 #print(test)
 
-
 # Reading the data
 setD = read_data(test, testObj)
 
@@ -63,7 +62,7 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-maxvectY, maxvectX, minvectY, minvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) # y => ART, x => PLETH
+maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH,M_ART,2000,sigma)
 
 ###################################################################################################
 # Malak parts
@@ -94,12 +93,12 @@ maxvectY, maxvectX, minvectY, minvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) #
 
 
 # Predictions max :
-maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
-predictions_max = predict(maxvectY, maxvectX) # predict x from y 
+maxvectPLETH = np.array(maxvectPLETH).reshape(-1, 1) # reshape the data
+predictions_max = predict(maxvectPLETH, maxvectART) # predict x from y 
 
 # Predictions min :
-minvectY = np.array(minvectY).reshape(-1, 1) # reshape the data
-predictions_min = predict(minvectY, minvectX) # predict x from y 
+minvectPLETH = np.array(minvectPLETH).reshape(-1, 1) # reshape the data
+predictions_min = predict(minvectPLETH, minvectART) # predict x from y 
 
 # Print predictions
 #print(predictions)
