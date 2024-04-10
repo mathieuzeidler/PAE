@@ -30,7 +30,7 @@ def predict(x, y):  # Defining the prediction function that takes features (y) a
                                     #        Root Mean Squared Error: 2.9133299739900385
 
 
-    model = GradientBoostingRegressor(n_estimators=100, max_depth=8) # good : Mean Absolute Error: 1.6022896128593709
+    model = GradientBoostingRegressor(n_estimators=100, max_depth=13) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
                                         #        Root Mean Squared Error: 2.4527025070991977
     #model = KNeighborsRegressor() # good : Mean Absolute Error: 1.7536857020247725

@@ -62,12 +62,12 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLETH
+maxvectY, maxvectX = corrMaxMain(M_PLETH,M_ART,2000,sigma) # y => ART, x => PLETH
 
 
 # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
 maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-model = GradientBoostingRegressor(n_estimators=100, max_depth=13)
+model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
 model.fit(maxvectY_array, maxvectX)
 # R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
 # R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
