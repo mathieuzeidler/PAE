@@ -135,9 +135,9 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.title("MIN SCATTERPLOT")
     plt.show(block=False)
 
-    #print("CORRELATION COEFF MAXMAX BEFORE CUT: ", np.corrcoef(maximumsVectX,maximumsVectY)[0,1])
-    #print("CORRELATION COEFF MINMIN BEFORE CUT: ", np.corrcoef(minimumsVectX,minimumsVectY)[0,1])
-    #print("CORRELATION COEFF MAXMAX: ", np.corrcoef(cutMaximumsVectX,cutMaximumsVectY)[0,1])
-    #print("CORRELATION COEFF MINMIN: ", np.corrcoef(cutMinimumsVectX,cutMinimumsVectY)[0,1])
+    print("CORRELATION COEFF MAXMAX BEFORE CUT: ", np.corrcoef(maximumsVectX,maximumsVectY)[0,1])
+    print("CORRELATION COEFF MINMIN BEFORE CUT: ", np.corrcoef(minimumsVectX,minimumsVectY)[0,1])
+    print("CORRELATION COEFF MAXMAX: ", np.corrcoef(cutMaximumsVectX,cutMaximumsVectY)[0,1])
+    print("CORRELATION COEFF MINMIN: ", np.corrcoef(cutMinimumsVectX,cutMinimumsVectY)[0,1])
 
     return cutMaximumsVectX, cutMaximumsVectY, cutMinimumsVectX, cutMinimumsVectY # X => PLETH, Y => ART
