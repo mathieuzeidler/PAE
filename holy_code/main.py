@@ -111,6 +111,7 @@ plt.xlabel('Time')
 plt.ylabel('Predicted Value')
 plt.show()
 
+
 # Plot predictions min
 plt.figure(figsize=(10, 6))
 plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
