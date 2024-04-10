@@ -136,4 +136,4 @@ def corrMaxMain(x,y,winSize,sigma):
     print("CORRELATION COEFF MAXMAX: ", np.corrcoef(cutMaximumsVectX,cutMaximumsVectY)[0,1])
     print("CORRELATION COEFF MINMIN: ", np.corrcoef(cutMinimumsVectX,cutMinimumsVectY)[0,1])
 
-    return cutMaximumsVectX, cutMaximumsVectY, cutMinimumsVectX, cutMinimumsVectY
+    return cutMaximumsVectX, cutMaximumsVectY
