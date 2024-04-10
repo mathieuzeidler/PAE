@@ -81,7 +81,7 @@ def corrMaxMain(x,y,winSize,sigma):
     #print(len(minimumsVectY))
     #print(minimumsVectY[1000])
     
-    plt.figure(88)
+    plt.figure()
     plt.scatter(maximumsVectX,maximumsVectY)
     plt.hlines(np.mean(maximumsVectY),-200,200, colors="red")
     plt.hlines(np.mean(maximumsVectY)-1.4*np.std(maximumsVectY),-200,200, colors="red")
@@ -92,18 +92,20 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.xlabel("Maximums PLETH")
     plt.ylabel("Maximums ART")
     plt.title("MAX SCATTERPLOT")
+    plt.show(block=False)
 
-    plt.figure(89)
+    plt.figure()
     plt.scatter(minimumsVectX,minimumsVectY)
     plt.xlabel("Minimums PLETH")
     plt.ylabel("Minimums ART")
     plt.title("MIN SCATTERPLOT")
+    plt.show(block=False)
 
     cutMaximumsVectX, cutMaximumsVectY = mf.cutData2D(maximumsVectX,maximumsVectY,3)
     cutMinimumsVectX, cutMinimumsVectY = mf.cutData2D(minimumsVectX,minimumsVectY,3)
 
     linMaxXY = linregress(cutMaximumsVectX, cutMaximumsVectY)
-    plt.figure(90)
+    plt.figure()
     plt.scatter(cutMaximumsVectX,cutMaximumsVectY)
     xLinSpace = np.linspace(-200,200,1000)
     plt.plot(xLinSpace, linMaxXY.intercept + linMaxXY.slope*xLinSpace, 'r', label='fitted line')
@@ -117,9 +119,10 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.xlabel("Maximums PLETH")
     plt.ylabel("Maximums ART")
     plt.title("MAX SCATTERPLOT")
+    plt.show(block=False)
 
     linMinXY = linregress(cutMinimumsVectX, cutMinimumsVectY)
-    plt.figure(92)
+    plt.figure()
     plt.scatter(cutMinimumsVectX,cutMinimumsVectY)
     xLinSpace = np.linspace(-200,200,1000)
     plt.plot(xLinSpace, linMinXY.intercept + linMinXY.slope*xLinSpace, 'r', label='fitted line')
@@ -130,6 +133,7 @@ def corrMaxMain(x,y,winSize,sigma):
     plt.xlabel("MINIMUMS PLETH")
     plt.ylabel("MINIMUMS ART")
     plt.title("MIN SCATTERPLOT")
+    plt.show(block=False)
 
     print("CORRELATION COEFF MAXMAX BEFORE CUT: ", np.corrcoef(maximumsVectX,maximumsVectY)[0,1])
     print("CORRELATION COEFF MINMIN BEFORE CUT: ", np.corrcoef(minimumsVectX,minimumsVectY)[0,1])

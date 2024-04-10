@@ -109,7 +109,7 @@ plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
 plt.title('Predictions max of ART from PLETH')
 plt.xlabel('Time')
 plt.ylabel('Predicted Value')
-plt.show()
+plt.show(block=False)
 
 
 # Plot predictions min
@@ -118,7 +118,7 @@ plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
 plt.title('Predictions min of ART from PLETH')
 plt.xlabel('Time')
 plt.ylabel('Predicted Value')
-plt.show()
+plt.show(block=False)
 
 ###################################################################################################
 
