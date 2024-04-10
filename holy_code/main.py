@@ -29,7 +29,7 @@ if not os.path.exists(DOWNLOAD_DIR):
 testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 test = testObj.get_track_names()
 
-print(test)
+#print(test)
 
 # Reading the data
 setD = read_data(test, testObj)
@@ -131,16 +131,16 @@ locAbsM_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbs
 locAbsm_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbsm_PLETH]
 
 #ART
-print("\nlocal minimum t ART: " + str(locAbsm_ART))
-print("local minimum value ART: " + str(locAbsm_values_ART))
-print("\nlocal maximum t ART: " + str(locAbsM_ART))
-print("local maximum value ART: " + str(locAbsM_values_ART))
+#print("\nlocal minimum t ART: " + str(locAbsm_ART))
+#print("local minimum value ART: " + str(locAbsm_values_ART))
+#print("\nlocal maximum t ART: " + str(locAbsM_ART))
+#print("local maximum value ART: " + str(locAbsM_values_ART))
 
 #PLETH
-print("\nlocal minimum t PLETH: " + str(locAbsm_PLETH))
-print("local minimum value PLETH: " + str(locAbsm_values_PLETH))
-print("\nlocal maximum t PLETH: " + str(locAbsM_PLETH))
-print("local maximum value PLETH: " + str(locAbsM_values_PLETH))
+#print("\nlocal minimum t PLETH: " + str(locAbsm_PLETH))
+#print("local minimum value PLETH: " + str(locAbsm_values_PLETH))
+#print("\nlocal maximum t PLETH: " + str(locAbsM_PLETH))
+#print("local maximum value PLETH: " + str(locAbsM_values_PLETH))
 
 ###################################################################################################
     

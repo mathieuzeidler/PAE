@@ -12,6 +12,7 @@ def usemodel(X_train,X_test,y_train,y_test,model,name):
 
     model.fit(X_train, y_train)  # Training the model using the training data
     predictions = model.predict(X_test)  # Making predictions using the trained model on the testing data
+    print('                                  ')
     print("------Results of ",name,":--------")
     print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
     print('Mean Squared Error:', metrics.mean_squared_error(y_test, predictions))  # Printing the Mean Squared Error of the predictions
