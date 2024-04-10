@@ -32,7 +32,7 @@ test = testObj.get_track_names()
 print(test)
 
 # Reading the data
-setD = read_data(test, testObj,"Infinity/PLETH_SPO2","Demo/ART","Demo/PLETH")
+setD = read_data(test, testObj)
 
 #################################################################################################################
     
