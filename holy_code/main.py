@@ -26,10 +26,11 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
-testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+#testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+testObj = vd.read_vital("VitalDB_data/9-3/mj6uua9n3_240405_090144.vital")
 test = testObj.get_track_names()
 
-print(test)
+#print(test)
 
 # Reading the data
 setD = read_data(test, testObj)
@@ -41,11 +42,11 @@ setD = read_data(test, testObj)
 #################################################################################################################
 
 k = 1
-M_SPO2, M_ART, M_PLETH = process_data(setD)
+M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
 
 
 # Displaying the M matrices
-display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
+#display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
 
 ###############################################################################################################
     
@@ -62,47 +63,69 @@ filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.ap
 filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
 
 #Correlations:
-maxvectY, maxvectX = corrMaxMain(M_ART,M_PLETH,2000,sigma) # y => ART, x => PLETH
+maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH[:456000],M_ART[:456000],2000,sigma)
 
+###################################################################################################
+# Malak parts (t'es moche)
 
 # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
-maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-model = GradientBoostingRegressor(n_estimators=100, max_depth=13)
-model.fit(maxvectY_array, maxvectX)
+#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+#model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
+#model.fit(maxvectY_array, maxvectX)
 # R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
 # R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
 # R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
 # R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
 
 # Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
-prediction = model.predict(maxvectY_array)
+#prediction = model.predict(maxvectY_array)
 # Calculate the R-squared score
-r2 = r2_score(maxvectX, prediction)
-print("R-squared score:", r2)
+#r2 = r2_score(maxvectX, prediction)
+#print("R-squared score:", r2)
+
+#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+#model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
+#model.fit(maxvectY_array,maxvectX)
+#prediction = model.predict(maxvectY_array)
+#r2 = metrics.r2_score(maxvectX,prediction)
+#print("R-squared score:",r2)
 
 ###################################################################################################
 
-#Predictions:
-maxvectY = np.array(maxvectY).reshape(-1, 1) # reshape the data
-predictions = predict(maxvectY, maxvectX) # predict x from y 
 
-maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
-model.fit(maxvectY_array,maxvectX)
-prediction = model.predict(maxvectY_array)
-r2 = metrics.r2_score(maxvectX,prediction)
-print("R-squared score:",r2)
+# Predictions max :
+maxvectPLETH = np.array(maxvectPLETH).reshape(-1, 1) # reshape the data
+print('                     ')
+print('MAX prediction result')
+print('\/\/\/\/\/\/\/\/\/\/\/\/')
+predictions_max = predict(maxvectPLETH, maxvectART) # predict x from y 
+
+# Predictions min :
+minvectPLETH = np.array(minvectPLETH).reshape(-1, 1) # reshape the data
+print('                     ')
+print('MIN prediction result')
+print('\/\/\/\/\/\/\/\/\/\/\/\/')
+predictions_min = predict(minvectPLETH, minvectART) # predict x from y 
 
 # Print predictions
 #print(predictions)
 
-# Plot predictions
+# Plot predictions max
 plt.figure(figsize=(10, 6))
-plt.plot(predictions, 'r-')  # 'r-' means red line
-plt.title('Predictions of ART from PLETH')
-plt.xlabel('Time')
+plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
+plt.title('Predictions max of ART from PLETH')
+plt.xlabel('Index')
 plt.ylabel('Predicted Value')
-plt.show()
+plt.show(block=False)
+
+
+# Plot predictions min
+plt.figure(figsize=(10, 6))
+plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
+plt.title('Predictions min of ART from PLETH')
+plt.xlabel('Index')
+plt.ylabel('Predicted Value')
+plt.show(block=False)
 
 ###################################################################################################
 
@@ -115,16 +138,16 @@ locAbsM_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbs
 locAbsm_values_PLETH = [[smoothedM_Pleth[int(t)] for t in row] for row in locAbsm_PLETH]
 
 #ART
-print("\nlocal minimum t ART: " + str(locAbsm_ART))
-print("local minimum value ART: " + str(locAbsm_values_ART))
-print("\nlocal maximum t ART: " + str(locAbsM_ART))
-print("local maximum value ART: " + str(locAbsM_values_ART))
+#print("\nlocal minimum t ART: " + str(locAbsm_ART))
+#print("local minimum value ART: " + str(locAbsm_values_ART))
+#print("\nlocal maximum t ART: " + str(locAbsM_ART))
+#print("local maximum value ART: " + str(locAbsM_values_ART))
 
 #PLETH
-print("\nlocal minimum t PLETH: " + str(locAbsm_PLETH))
-print("local minimum value PLETH: " + str(locAbsm_values_PLETH))
-print("\nlocal maximum t PLETH: " + str(locAbsM_PLETH))
-print("local maximum value PLETH: " + str(locAbsM_values_PLETH))
+#print("\nlocal minimum t PLETH: " + str(locAbsm_PLETH))
+#print("local minimum value PLETH: " + str(locAbsm_values_PLETH))
+#print("\nlocal maximum t PLETH: " + str(locAbsM_PLETH))
+#print("local maximum value PLETH: " + str(locAbsM_values_PLETH))
 
 ###################################################################################################
     
