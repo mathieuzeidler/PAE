@@ -12,6 +12,8 @@ from sklearn.metrics import r2_score
 from sklearn import metrics
 from correlate_minmax import corrMaxMain
 from data_prediction import predict
+from scipy.signal import argrelextrema
+from math_func import vectCycleIntegral
 
 ###############################################################################################################
 
@@ -26,7 +28,6 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
-<<<<<<< Updated upstream
 #testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 testObj = vd.read_vital("VitalDB_data/9-3/mj6uua9n3_240405_090144.vital")
 test = testObj.get_track_names()
@@ -35,9 +36,6 @@ test = testObj.get_track_names()
 
 # Reading the data
 setD = read_data(test, testObj)
-=======
-
->>>>>>> Stashed changes
 
 #################################################################################################################
     
@@ -92,6 +90,22 @@ filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_oper
 
 #Correlations:
 maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH[:456000],M_ART[:456000],2000,sigma)
+
+#Integral cycles:
+# Use argrelextrema to find indices of minima
+min_indices = argrelextrema(filtered_M_PLETH, np.less)
+min_indices = min_indices[0]
+print('                                        ')
+print('Vector of minima indices of PLETH signal')
+print(min_indices)
+print("Size of min_indices: ", min_indices.size)
+
+
+print('                                         ')
+print('Vector of integral cycles of PLETH signal')
+vectIntegrals = vectCycleIntegral(filtered_M_PLETH, min_indices)
+print(vectIntegrals)
+print("Size of vectIntegrals: ", vectIntegrals.size)
 
 ###################################################################################################
 # Malak parts (t'es moche)

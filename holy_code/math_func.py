@@ -226,3 +226,24 @@ def cutData2D(x,y,discrim):
     cutVectX = np.array(cutVectX)
     cutVectY = np.array(cutVectY)
     return cutVectX, cutVectY
+
+# Create a vector with the integral values of the signal cycles
+def vectCycleIntegral(signal,minima) :
+    # Initialize the list of integrals
+    integrals = []
+
+    # Add the indices of the start and end of the signal to the minima
+    # Without both of these elements (0 and len(signal)), cycles before 
+    # the first minimum and after the last minimum would be ignored.
+    minima = np.concatenate(([0], minima, [len(signal)]))
+
+    # Calculate the integral for each cycle
+    for i in range(len(minima) - 1):
+        cycle = signal[minima[i]:minima[i+1]]
+        integral = np.trapz(cycle)
+        integrals.append(integral)
+
+    # Convert the list of integrals to a numpy array
+    integrals = np.array(integrals)
+
+    return integrals
