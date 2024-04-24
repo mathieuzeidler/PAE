@@ -26,6 +26,7 @@ if not os.path.exists(DOWNLOAD_DIR):
     os.mkdir(DOWNLOAD_DIR)
 
 #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
+<<<<<<< Updated upstream
 #testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
 testObj = vd.read_vital("VitalDB_data/9-3/mj6uua9n3_240405_090144.vital")
 test = testObj.get_track_names()
@@ -34,12 +35,39 @@ test = testObj.get_track_names()
 
 # Reading the data
 setD = read_data(test, testObj)
+=======
+
+>>>>>>> Stashed changes
 
 #################################################################################################################
     
     ## Displaying the data and storing the values in the matrices
 
 #################################################################################################################
+list_var = ['SNUADC/PLETH', 'SNUADC/ART', 'SNUADC/PLETH_SPO2']
+
+#CONVERT THE .VITAL FILE TO A .VITAL FILE WITH ONLY 3 VARIABLES
+vf = vd.VitalFile("1.vital", list_var)
+vf.to_vital('3var.vital')
+
+#NOW WE HAVE A .VITAL FILE WITH ONLY 3 VARIABLES
+#WE CAN NOW READ THE FILE
+vf = vd.VitalFile("3var.vital", list_var)
+
+#FIRST WE WANT TO SEE THE ARRAYS OF THE VARIABLES
+#ELIMINATE THE NAN VALUES
+list_var1 = vf.get_track_samples('SNUADC/PLETH', 1/2)
+list_var1 = [x for x in list_var1 if not np.isnan(x)]
+list_var2 = vf.get_track_samples('SNUADC/ART', 1/2)
+list_var2 = [x for x in list_var2 if not np.isnan(x)]
+
+
+testObj = vd.read_vital("3var.vital")
+
+
+
+# Reading the data
+setD = read_data(list_var, testObj)
 
 k = 1
 M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
