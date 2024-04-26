@@ -196,14 +196,23 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         smoothed6Max = localMaxOP2(smoothed6)
         smoothed6Min = localMinOP2(smoothed6)
         #print(smoothed6Max)
-        absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
-        absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
+        # absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
+        # absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
         #plt.plot(smoothed6)
         #plt.vlines(absMaxSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="orange")
         #plt.vlines(absMinSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="red")
         #plt.show(block=False)
 
         smoothed6 = savgolSmoothing(M_SIGNAL,100,2,sigma)
+        #smoothed6 = gaussian_filter1d(M_SIGNAL, sigma=3, mode='reflect')
+
+        absMaxSmoothed6 = np.array(localMaxOP2(smoothed6))
+        absMinSmoothed6 = np.array(localMinOP2(smoothed6))
+
+        # plt.plot(smoothed6)
+        # plt.vlines(absMaxSmoothed6,np.min(smoothed6),np.max(smoothed6),colors="orange")
+        # plt.vlines(absMinSmoothed6,np.min(smoothed6),np.max(smoothed6),colors="red")
+        # plt.show(block=False)
 
     # Apply Gaussian filter to PLETH signal
     if M_SIGNAL.size > 0 and signal_name == "M_PLETH" :
@@ -397,13 +406,18 @@ def apply_gaussian_filter(M_SIGNAL, signal_name, sigma, k):
         smoothed6Max = localMaxOP2(smoothed6)
         smoothed6Min = localMinOP2(smoothed6)
         #print(smoothed6Max)
-        absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
-        absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
+        # absMaxSmoothed6 = excludeMaximums(smoothed6,smoothed6Max[0])
+        # absMinSmoothed6 = excludeMinimums(smoothed6,absMaxSmoothed6[1,:],smoothed6Min[0])
 
         smoothed6 = savgolSmoothing(M_SIGNAL,100,2,sigma)
-        #plt.plot(smoothed6)
-        #plt.vlines(absMaxSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="orange")
-        #plt.vlines(absMinSmoothed6[1,:],np.min(smoothed6),np.max(smoothed6),colors="red")
-        #plt.show(block=False)
+        #smoothed6 = gaussian_filter1d(M_SIGNAL, sigma=3, mode='reflect')
+        
+        absMaxSmoothed6 = np.array(localMaxOP2(smoothed6))
+        absMinSmoothed6 = np.array(localMinOP2(smoothed6))
+
+        # plt.plot(smoothed6)
+        # plt.vlines(absMaxSmoothed6,np.min(smoothed6),np.max(smoothed6),colors="orange")
+        # plt.vlines(absMinSmoothed6,np.min(smoothed6),np.max(smoothed6),colors="red")
+        # plt.show(block=False)
 
     return smoothed6,k, locAbsM, locAbsm, smoothedM_Signal

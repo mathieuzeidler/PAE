@@ -10,7 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import r2_score
 from sklearn import metrics
-from correlate_minmax import corrMaxMain
+from correlate_minmax import corrMaxMain, corrMaxMain2
 from data_prediction import predict, plotRes
 
 ###############################################################################################################
@@ -62,22 +62,32 @@ print("MARSIZ:", M_ART.size)
 print("MAPLETH:", M_PLETH.size)
 
 # ART
-filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART,"M_ART", sigma, k)
+filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART_STACKED,"M_ART", sigma, k)
 # PLETH
-filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH, "M_PLETH", sigma, k)
+filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH_STACKED, "M_PLETH", sigma, k)
+# plt.show()
+# plt.figure()
+# plt.plot(filtered_M_ART)
+# plt.title("FILTERED ART")
+
+# plt.figure()
+# plt.plot(filtered_M_PLETH)
+# plt.title("FILTERED PLETH")
+# plt.show()
+
 
 #Correlations:
-maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART  = corrMaxMain(M_PLETH_STACKED,M_ART_STACKED,15000,sigma)
+maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART  = corrMaxMain2(filtered_M_PLETH[700000:],filtered_M_ART[700000:],1.5,30)
 
-frequencyPLETH = np.copy(minimumsPosPLETH)
+# frequencyPLETH = np.copy(minimumsPosPLETH)
 
-for i in range(len(frequencyPLETH)-1):
-    frequencyPLETH[i] = frequencyPLETH[i+1]-frequencyPLETH[i]
-print("**********+")
-print(frequencyPLETH)
-print("***********")
+# for i in range(len(frequencyPLETH)-1):
+#     frequencyPLETH[i] = frequencyPLETH[i+1]-frequencyPLETH[i]
+# print("**********+")
+# print(frequencyPLETH)
+# print("***********")
 
-frequencyPLETH = frequencyPLETH[:-1]
+# frequencyPLETH = frequencyPLETH[:-1]
 
 print(filtered_M_ART)
 
@@ -92,8 +102,8 @@ plt.title("PLETH MIN Pos")
 plt.show(block=False)
 
 plt.figure()
-plt.plot(frequencyPLETH)
-plt.title("PLETH Max Pos")
+plt.plot(frecPLETH)
+plt.title("PLETH frec")
 plt.show(block=False)
 
 # print("++++++++++++")
@@ -163,15 +173,19 @@ plt.show(block=False)
 n1 = len(maxvectPLETH)
 n2 = len(minvectPLETH)
 n3 = min(n1,n2)
-maxvectPLETH_PRED = np.zeros((n3,2))
+maxvectPLETH_PRED = np.zeros((n3,4))
 maxvectPLETH_PRED[:,0] = maxvectPLETH[:n3]
 maxvectPLETH_PRED[:,1] = minvectPLETH[:n3]
+maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
+maxvectPLETH_PRED[:,3] = intPLETH[:n3]
 predictions_max, maxtest = predict(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
 
 # Predictions min :
-minvectPLETH_PRED = np.zeros((n3,2))
+minvectPLETH_PRED = np.zeros((n3,4))
 minvectPLETH_PRED[:,0] = minvectPLETH[:n3]
 minvectPLETH_PRED[:,1] = maxvectPLETH[:n3]
+maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
+maxvectPLETH_PRED[:,3] = intPLETH[:n3]
 predictions_min, mintest = predict(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
 
 # Print predictions
