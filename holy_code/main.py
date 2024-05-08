@@ -3,6 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import filter_operation
+import math_func as mf
 from calculate_stats import calculate_statistics
 from data_processing import read_data, process_data, display_matrices, stacker
 from sklearn.model_selection import train_test_split
@@ -11,7 +12,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import r2_score
 from sklearn import metrics
 from correlate_minmax import corrMaxMain, corrMaxMain2
-from data_prediction import predict, plotRes
+from data_prediction import predict, plotRes, predict3, predict4
 
 ###############################################################################################################
 
@@ -19,199 +20,265 @@ from data_prediction import predict, plotRes
 
 ###############################################################################################################
 
+imp = False
+
 ## For now we just read one file localy but we will need to read more files and in a continue way
-DOWNLOAD_DIR = "VitalDB_data/VitalDB_data/NewData"
-if not os.path.exists(DOWNLOAD_DIR):
-    print("Creating new directory")
-    os.mkdir(DOWNLOAD_DIR)
+if imp:
+    DOWNLOAD_DIR = "VitalDB_data/VitalDB_data/NewData"
+    if not os.path.exists(DOWNLOAD_DIR):
+        print("Creating new directory")
+        os.mkdir(DOWNLOAD_DIR)
 
-#testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
-#testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
-testObj = vd.read_vital("VitalDB_data/9-4/240404/mj6uua9n3_240404_124253.vital")
-test = testObj.get_track_names()
+    #testObj = vd.read_vital("VitalDB_data/VitalDB_data/1.vital")
+    #testObj = vd.read_vital("VitalDB_data/19-3/QUI12_230718_175152.vital")
+    testObj = vd.read_vital("VitalDB_data/9-4/240404/mj6uua9n3_240404_124253.vital")
+    test = testObj.get_track_names()
 
-print(test)
+    print(test)
 
-# Reading the data
-setD = read_data(test, testObj)
+    # Reading the data
+    setD = read_data(test, testObj)
 
-#################################################################################################################
+    #################################################################################################################
+        
+        ## Displaying the data and storing the values in the matrices
+
+    #################################################################################################################
+
+    k = 1
+    M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
+
+    M_ART_STACKED, M_PLETH_STACKED = stacker(np.array(["VitalDB_data/9-4/240404/mj6uua9n3_240404_124253.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_101328.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_105021.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_164259.vital","VitalDB_data/9-4/240403/h48esuvf8_240403_165638.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_102619.vital","VitalDB_data/9-4/240406/mj6uua9n3_240406_073435.vital","VitalDB_data/9-4/240406/mj6uua9n3_240406_054613.vital","VitalDB_data/9-4/240405/mj6uua9n3_240405_212503.vital","VitalDB_data/9-4/240403/mj6uua9n3_240403_230953.vital"]))
+
+    # Displaying the M matrices
+    #display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
+
+    ###############################################################################################################
+        
+        ## Apply Gaussian filter to ART signal
+
+    ###############################################################################################################
+        
+    # Filter parameters
+    sigma = 5  # We can adjust it
+
+    print("MARSIZ:", M_ART.size)
+    print("MAPLETH:", M_PLETH.size)
+
+    # ART
+    filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART_STACKED,"M_ART", sigma, k)
+    # PLETH
+    filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH_STACKED, "M_PLETH", sigma, k)
+    # plt.show()
+    # plt.figure()
+    # plt.plot(filtered_M_ART)
+    # plt.title("FILTERED ART")
+
+    # plt.figure()
+    # plt.plot(filtered_M_PLETH)
+    # plt.title("FILTERED PLETH")
+    # plt.show()
+
+
+    #Correlations:
+    #700000
+    maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART  = corrMaxMain2(filtered_M_PLETH[0:],filtered_M_ART[0:],1.5,40,40000)
+
+
+    # frequencyPLETH = np.copy(minimumsPosPLETH)
+
+    # for i in range(len(frequencyPLETH)-1):
+    #     frequencyPLETH[i] = frequencyPLETH[i+1]-frequencyPLETH[i]
+    # print("**********+")
+    # print(frequencyPLETH)
+    # print("***********")
+
+    # frequencyPLETH = frequencyPLETH[:-1]
+
+    # pilot = np.load("PILOT.npy")
+
+    # pilotInter = CubicHermiteSpline(np.arange(len(pilot)),pilot,mf.finiteDiffDiscrete(pilot))
+
+    # plt.figure()
+    # plt.plot(pilot)
+    # xx = np.linspace(0,len(pilot),1000)
+    # plt.plot(xx,pilotInter(xx))
+    # plt.title("PILOT PLETH")
+    # plt.show(block=False)
+
+
+    # plt.figure()
+    # plt.plot(np.correlate(pilot,filtered_M_PLETH))
+    # plt.title("PILOT X-CORR")
+    # plt.show(block = False)
+
+    print(filtered_M_ART)
+
+    plt.figure()
+    plt.plot(maximumsPosPLETH)
+    plt.title("PLETH Max Pos")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(minimumsPosPLETH)
+    plt.title("PLETH MIN Pos")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(maxvectPLETH)
+    plt.plot(maxvectART)
+    plt.title("MAXIMUMS")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(minvectPLETH)
+    plt.plot(minvectART)
+    plt.title("MAXIMUMS")
+    plt.show(block=False)
+
+
+    plt.figure()
+    plt.plot(frecPLETH)
+    plt.title("PLETH frec")
+    plt.show(block=False)
+
+    plt.show()
+
+    # print("++++++++++++")
+    # print(maximumsPosART)
+    # print("++++++++++++")
+
+    plt.figure()
+    plt.plot(filtered_M_ART)
+    plt.title("ART")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(filtered_M_PLETH)
+    plt.title("PLETH")
+    plt.show(block=False)
+
+
+    plt.figure()
+    plt.plot(maxvectART)
+    plt.title("maxvertART")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(maxvectPLETH)
+    plt.title("maxvertPLETH")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(minvectART)
+    plt.title("minvertART")
+    plt.show(block=False)
+
+    plt.figure()
+    plt.plot(minvectPLETH)
+    plt.title("minvertPLETH")
+    plt.show(block=False)
+
+    ###################################################################################################
+    # Malak parts
+
+    # Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
+    #maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+    #model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
+    #model.fit(maxvectY_array, maxvectX)
+    # R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
+    # R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
+    # R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
+    # R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
+
+    # Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
+    #prediction = model.predict(maxvectY_array)
+    # Calculate the R-squared score
+    #r2 = r2_score(maxvectX, prediction)
+    #print("R-squared score:", r2)
+
+    #maxvectY_array = np.array(maxvectY).reshape(-1, 1)
+    #model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
+    #model.fit(maxvectY_array,maxvectX)
+    #prediction = model.predict(maxvectY_array)
+    #r2 = metrics.r2_score(maxvectX,prediction)
+    #print("R-squared score:",r2)
+
+    ###################################################################################################
+
+
+    # Predictions max :
+    n1 = len(maxvectPLETH)
+    n2 = len(minvectPLETH)
+    n3 = min(n1,n2)
+    maxvectPLETH_PRED = np.zeros((n3,4))
+    maxvectPLETH_PRED[:,0] = maxvectPLETH[:n3]
+    maxvectPLETH_PRED[:,1] = minvectPLETH[:n3]
+    maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
+    maxvectPLETH_PRED[:,3] = intPLETH[:n3]
+    np.save("maxvertpleth",maxvectPLETH_PRED)
+    np.save("maxvertART",maxvectART[:n3])
+
+    plt.figure()
+    plt.plot(maxvectPLETH_PRED[:,3])
+    plt.title("PLETH CYCLE INTEGRALS")
+    plt.show(block=False)
+    predictions_max, maxtest = predict3(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
+
+    print("------------MINIMUMS--------------")
+
+    # Predictions min :
+    minvectPLETH_PRED = np.zeros((n3,4))
+    minvectPLETH_PRED[:,0] = minvectPLETH[:n3]
+    minvectPLETH_PRED[:,1] = maxvectPLETH[:n3]
+    maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
+    maxvectPLETH_PRED[:,3] = intPLETH[:n3]
+    predictions_min, mintest = predict3(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
+
+    np.save("minvertpleth",minvectPLETH_PRED)
+    np.save("minvertart",minvectART[:n3])
+
+    plotRes(predictions_max,maxtest)
+    plotRes(predictions_min,mintest)
+
+    plt.show()
+
+    # Print predictions
+    #print(predictions)
+
+    # Plot predictions max
+    plt.figure(figsize=(10, 6))
+    plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
+    plt.plot(maxtest,'b-')
+    plt.title('Predictions max of ART from PLETH')
+    plt.xlabel('Time')
+    plt.ylabel('Predicted Value')
+    plt.show(block=False)
+
+
+    # Plot predictions min
+    plt.figure(figsize=(10, 6))
+    plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
+    plt.plot(mintest,'b-')
+    plt.title('Predictions min of ART from PLETH')
+    plt.xlabel('Time')
+    plt.ylabel('Predicted Value')
+    plt.show(block=False)
+else:
+    maxvectPLETH_PRED = np.load("maxvertpleth.npy")
+    maxvectART = np.load("maxvertART.npy")
+    minvectPLETH_PRED = np.load("minvertpleth.npy")
+    minvectART = np.load("minvertart.npy")
+
+    predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART) # predict x from y 
+    predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART) # predict x from y 
+
+    plotRes(predictions_max,maxtest)
+    plotRes(predictions_min,mintest)
+    plt.show()
+
     
-    ## Displaying the data and storing the values in the matrices
 
-#################################################################################################################
-
-k = 1
-M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
-
-M_ART_STACKED, M_PLETH_STACKED = stacker(np.array(["VitalDB_data/9-4/240404/mj6uua9n3_240404_124253.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_101328.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_105021.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_164259.vital","VitalDB_data/9-4/240403/h48esuvf8_240403_165638.vital","VitalDB_data/9-4/240404/mj6uua9n3_240404_102619.vital"]))
-
-# Displaying the M matrices
-#display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
-
-###############################################################################################################
-    
-    ## Apply Gaussian filter to ART signal
-
-###############################################################################################################
-    
-# Filter parameters
-sigma = 5  # We can adjust it
-
-print("MARSIZ:", M_ART.size)
-print("MAPLETH:", M_PLETH.size)
-
-# ART
-filtered_M_ART, k, locAbsM_ART, locAbsm_ART, smoothedM_Art = filter_operation.apply_gaussian_filter(M_ART_STACKED,"M_ART", sigma, k)
-# PLETH
-filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_operation.apply_gaussian_filter(M_PLETH_STACKED, "M_PLETH", sigma, k)
-# plt.show()
-# plt.figure()
-# plt.plot(filtered_M_ART)
-# plt.title("FILTERED ART")
-
-# plt.figure()
-# plt.plot(filtered_M_PLETH)
-# plt.title("FILTERED PLETH")
-# plt.show()
-
-
-#Correlations:
-maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART  = corrMaxMain2(filtered_M_PLETH[700000:],filtered_M_ART[700000:],1.5,30)
-
-# frequencyPLETH = np.copy(minimumsPosPLETH)
-
-# for i in range(len(frequencyPLETH)-1):
-#     frequencyPLETH[i] = frequencyPLETH[i+1]-frequencyPLETH[i]
-# print("**********+")
-# print(frequencyPLETH)
-# print("***********")
-
-# frequencyPLETH = frequencyPLETH[:-1]
-
-print(filtered_M_ART)
-
-plt.figure()
-plt.plot(maximumsPosPLETH)
-plt.title("PLETH Max Pos")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(minimumsPosPLETH)
-plt.title("PLETH MIN Pos")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(frecPLETH)
-plt.title("PLETH frec")
-plt.show(block=False)
-
-# print("++++++++++++")
-# print(maximumsPosART)
-# print("++++++++++++")
-
-plt.figure()
-plt.plot(filtered_M_ART)
-plt.title("ART")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(filtered_M_PLETH)
-plt.title("PLETH")
-plt.show(block=False)
-
-
-plt.figure()
-plt.plot(maxvectART)
-plt.title("maxvertART")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(maxvectPLETH)
-plt.title("maxvertPLETH")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(minvectART)
-plt.title("minvertART")
-plt.show(block=False)
-
-plt.figure()
-plt.plot(minvectPLETH)
-plt.title("minvertPLETH")
-plt.show(block=False)
-
-###################################################################################################
-# Malak parts
-
-# Gradient Boosting Regression model to predict the correlation between the ART and PLETH signals
-#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-#model = GradientBoostingRegressor(n_estimators=100, max_depth=8)
-#model.fit(maxvectY_array, maxvectX)
-# R-squared score: 0.28817222879730764 for n_estimators=100, max_depth=3
-# R-squared score: 0.4778262112518894 for n_estimators=100, max_depth=5
-# R-squared score: 0.7249963779958533 for n_estimators=100, max_depth=8
-# R-squared score: 0.9248403061986639 for n_estimators=100, max_depth=13
-
-# Predict the values of cutMaximumsVectY based on cutMaximumsVectX_poly
-#prediction = model.predict(maxvectY_array)
-# Calculate the R-squared score
-#r2 = r2_score(maxvectX, prediction)
-#print("R-squared score:", r2)
-
-#maxvectY_array = np.array(maxvectY).reshape(-1, 1)
-#model = GradientBoostingRegressor(n_estimators=100,max_depth=13)
-#model.fit(maxvectY_array,maxvectX)
-#prediction = model.predict(maxvectY_array)
-#r2 = metrics.r2_score(maxvectX,prediction)
-#print("R-squared score:",r2)
-
-###################################################################################################
-
-
-# Predictions max :
-n1 = len(maxvectPLETH)
-n2 = len(minvectPLETH)
-n3 = min(n1,n2)
-maxvectPLETH_PRED = np.zeros((n3,4))
-maxvectPLETH_PRED[:,0] = maxvectPLETH[:n3]
-maxvectPLETH_PRED[:,1] = minvectPLETH[:n3]
-maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
-maxvectPLETH_PRED[:,3] = intPLETH[:n3]
-predictions_max, maxtest = predict(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
-
-# Predictions min :
-minvectPLETH_PRED = np.zeros((n3,4))
-minvectPLETH_PRED[:,0] = minvectPLETH[:n3]
-minvectPLETH_PRED[:,1] = maxvectPLETH[:n3]
-maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
-maxvectPLETH_PRED[:,3] = intPLETH[:n3]
-predictions_min, mintest = predict(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
-
-# Print predictions
-#print(predictions)
-
-# Plot predictions max
-plt.figure(figsize=(10, 6))
-plt.plot(predictions_max['LinearRegression'], 'r-')  # 'r-' means red line
-plt.plot(maxtest,'b-')
-plt.title('Predictions max of ART from PLETH')
-plt.xlabel('Time')
-plt.ylabel('Predicted Value')
-plt.show(block=False)
-
-
-# Plot predictions min
-plt.figure(figsize=(10, 6))
-plt.plot(predictions_min['LinearRegression'], 'r-')  # 'r-' means red line
-plt.plot(mintest,'b-')
-plt.title('Predictions min of ART from PLETH')
-plt.xlabel('Time')
-plt.ylabel('Predicted Value')
-plt.show(block=False)
-
-plotRes(predictions_max,maxtest)
-plotRes(predictions_min,mintest)
 
 ###################################################################################################
 

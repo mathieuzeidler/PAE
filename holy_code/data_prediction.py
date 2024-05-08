@@ -1,23 +1,31 @@
-from sklearn.model_selection import train_test_split  # Importing function for splitting data into training and testing sets
-from sklearn.linear_model import LinearRegression  # Importing the Linear Regression model
+from sklearn.model_selection import train_test_split, RandomizedSearchCV  # Importing function for splitting data into training and testing sets
+from sklearn.linear_model import LinearRegression, Lasso, LogisticRegression, ElasticNet, RidgeCV, RidgeCV, LassoCV  # Importing the Linear Regression model
 from sklearn import metrics  # Importing metrics to compute the prediction errors
 import numpy as np  # Importing numpy for mathematical operations
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.ensemble import HistGradientBoostingRegressor, GradientBoostingRegressor, StackingRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.model_selection import KFold
+from skopt.space import Integer, Real
+from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 
-def usemodel(X_train,X_test,y_train,y_test,model,name):
+def usemodel(X_train,X_test,y_train,y_test,model,name, full, X,Y):
 
     model.fit(X_train, y_train)  # Training the model using the training data
-    predictions = model.predict(X_test)  # Making predictions using the trained model on the testing data
+    yt = y_test
+    if full:
+        predictions = model.predict(X)  # Making predictions using the trained model on the testing data
+        yt = Y
+    else:
+        predictions = model.predict(X_test)  # Making predictions using the trained model on the testing data
     print('                                  ')
     print("------Results of ",name,":--------")
-    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
-    print('Mean Squared Error:', metrics.mean_squared_error(y_test, predictions))  # Printing the Mean Squared Error of the predictions
-    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, predictions)))  # Printing the Root Mean Squared Error of the predictions
+    print('Mean Absolute Error:', metrics.mean_absolute_error(yt, predictions))  # Printing the Mean Absolute Error of the predictions
+    print('Mean Squared Error:', metrics.mean_squared_error(yt, predictions))  # Printing the Mean Squared Error of the predictions
+    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(yt, predictions)))  # Printing the Root Mean Squared Error of the predictions
 
     return predictions  # Returning the predictions
 
@@ -76,37 +84,157 @@ def usemodel(X_train,X_test,y_train,y_test,model,name):
 #print("R-squared score:", r2)
 
 # x the one to predict => ART and y => PLETH
-def predict(x, y):  # Defining the prediction function that takes features (y) and target (x) as inputs
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)  # Splitting the data into training and testing sets
+def predict(x, y, full, first):  # Defining the prediction function that takes features (y) and target (x) as inputs
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    # X_TRAIN = np.array((6,))
+    # Y_TRAIN = np.array((6,))
+    # K = len(X_train[:,0])//6
+    # for i in range(5):
+    #     X_TRAIN[i] = X_train[i*K:(i+1)*K,:]
+    #     Y_TRAIN[i] = y_train[i*K:(i+1)*K,:]
+    # X_TRAIN[5] = X_train[i*5:,:]
+    # Y_TRAIN[5] = X_train[i*5:,:]
     model = LinearRegression() # Mean Absolute Error: 2.2465127537930596
                                # Mean Squared Error: 10.928526268996647
                                # Root Mean Squared Error: 3.3058321598345923
-    predictionLinearR  = usemodel(X_train,X_test,y_train,y_test,model,"Linear Regression")
+    predictionLinearR  = usemodel(X_train,X_test,y_train,y_test,model,"Linear Regression", full, x,y)
     model = DecisionTreeRegressor() # Mean Absolute Error: 2.2465127537930596
                                     # Mean Squared Error: 10.928526268996647
                                     # Root Mean Squared Error: 3.3058321598345923 
-    predictionDecisionT  = usemodel(X_train,X_test,y_train,y_test,model,"Decision Tree Regressor")
+    predictionDecisionT  = usemodel(X_train,X_test,y_train,y_test,model,"Decision Tree Regressor", full, x,y)
+    model = Lasso(alpha=2) # Mean Absolute Error: 2.2465127537930596
+                                    # Mean Squared Error: 10.928526268996647
+                                    # Root Mean Squared Error: 3.3058321598345923 
+    predictionLasso  = usemodel(X_train,X_test,y_train,y_test,model,"Lasso Regressor", full, x,y)
     model = SVR() # Mean Absolute Error: 1.9616585887477098
                   # Mean Squared Error: 8.271744394120887
                   # Root Mean Squared Error: 2.876064045552687
-    predictionSVR  = usemodel(X_train,X_test,y_train,y_test,model, "SVR")
+    predictionSVR  = usemodel(X_train,X_test,y_train,y_test,model, "SVR", full, x, y)
     model = RandomForestRegressor() # good : Mean Absolute Error: 1.9883121185203616
                                     #        Mean Squared Error: 8.487491537348799
                                     #        Root Mean Squared Error: 2.9133299739900385
-    predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model, "Random Forest Regressor")
+    predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model, "Random Forest Regressor", full, x,y)
 
     model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
                                         #        Root Mean Squared Error: 2.4527025070991977
-    predictionGradientB = usemodel(X_train,X_test,y_train,y_test,model,"Gradient Boosting Regressor")
+    predictionGradientB = usemodel(X_train,X_test,y_train,y_test,model,"Gradient Boosting Regressor", full, x,y)
     model = KNeighborsRegressor() # good : Mean Absolute Error: 1.7536857020247725
                                   #        Mean Squared Error: 6.940321110475928
                                   #        Root Mean Squared Error: 2.634448919693819
-    predictionKNeighbors = usemodel(X_train,X_test,y_train,y_test,model, "KNeaighbors Regressor")
+    predictionKNeighbors = usemodel(X_train,X_test,y_train,y_test,model, "KNeaighbors Regressor", full, x,y)
 
-    toReturn = {'LinearRegression':predictionLinearR,'DecissionTree':predictionDecisionT,'SVR':predictionSVR,'RandomForest':predictionRandomF,'GradientBoosting':predictionGradientB,'KNeighbors':predictionKNeighbors}
+    toReturn = {'LinearRegression':predictionLinearR,'DecissionTree':predictionDecisionT,'SVR':predictionSVR,'RandomForest':predictionRandomF,'GradientBoosting':predictionGradientB,'KNeighbors':predictionKNeighbors, 'Lasso':predictionLasso}
 
     return toReturn , y_test
+
+def Stacking(model,train,y,test,n_fold, already, folds):
+    if not already:
+        folds=KFold(n_splits=n_fold,random_state=None)
+    train_pred = []
+    test_pred=np.empty((test.shape[0],1),float)
+    for train_indices,val_indices in folds.split(train,y):
+        x_train,x_val=train[train_indices],train[val_indices]
+        y_train,y_val=y[train_indices],y[val_indices]
+        model.fit(X=x_train,y=y_train)
+        train_pred=np.append(train_pred,model.predict(x_val))
+    model.fit(X=train,y=y)
+    train_pred = np.atleast_2d(np.array(train_pred)).T
+    test_pred= np.atleast_2d(np.array(model.predict(test))).T
+    return test_pred,train_pred, folds
+
+def predict2(x, y, finalmodel):  # Defining the prediction function that takes features (y) and target (x) as inputs
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    model = LinearRegression() # Mean Absolute Error: 2.2465127537930596
+                               # Mean Squared Error: 10.928526268996647
+                               # Root Mean Squared Error: 3.3058321598345923
+    test_pred1 ,train_pred1, folds =Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train, already=False, folds=None)
+    model = DecisionTreeRegressor() # Mean Absolute Error: 2.2465127537930596
+                                    # Mean Squared Error: 10.928526268996647
+                                    # Root Mean Squared Error: 3.3058321598345923 
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(train_pred1, train_pred2, axis=1)
+    teEns = np.append(test_pred1, test_pred2, axis=1)
+    model = Lasso(alpha=2) # Mean Absolute Error: 2.2465127537930596
+                                    # Mean Squared Error: 10.928526268996647
+                                    # Root Mean Squared Error: 3.3058321598345923 
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(trEns, train_pred2, axis=1)
+    teEns = np.append(teEns, test_pred2, axis=1)
+    model = SVR() # Mean Absolute Error: 1.9616585887477098
+                  # Mean Squared Error: 8.271744394120887
+                  # Root Mean Squared Error: 2.876064045552687
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(trEns, train_pred2, axis=1)
+    teEns = np.append(teEns, test_pred2, axis=1)
+    model = RandomForestRegressor() # good : Mean Absolute Error: 1.9883121185203616
+                                    #        Mean Squared Error: 8.487491537348799
+                                    #        Root Mean Squared Error: 2.9133299739900385
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(trEns, train_pred2, axis=1)
+    teEns = np.append(teEns, test_pred2, axis=1)
+
+    model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None) # good : Mean Absolute Error: 1.6022896128593709
+                                        #        Mean Squared Error: 6.0157495883306895
+                                        #        Root Mean Squared Error: 2.4527025070991977
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(trEns, train_pred2, axis=1)
+    teEns = np.append(teEns, test_pred2, axis=1)
+    model = KNeighborsRegressor() # good : Mean Absolute Error: 1.7536857020247725
+                                  #        Mean Squared Error: 6.940321110475928
+                                  #        Root Mean Squared Error: 2.634448919693819
+    test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
+    trEns = np.append(trEns, train_pred2, axis=1)
+    teEns = np.append(teEns, test_pred2, axis=1)
+    
+    finalmodel.fit(trEns,y_train)
+    predictions = finalmodel.predict(teEns)
+
+    return predictions , y_test, teEns, finalmodel
+
+def predict3(x,y):
+    #model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None)
+    model = GradientBoostingRegressor()
+    params = {"learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 1] ,"max_depth": [ 3, 4, 5, 6, 8, 10, 12, 15], "alpha": [0.1, 0.2 , 0.3, 0.4, 0.8, 0.9 ], "min_impurity_decrease" : [0.0, 0.2, 0.4 , 0.7, 5 ]}
+    searchParams = RandomizedSearchCV(model,param_distributions=params,n_iter=100,n_jobs=-1,cv=5, scoring='neg_mean_squared_error', verbose=1)
+    predictions , y_test, teEns, finalmodel = predict2(x,y,searchParams)
+    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
+    print('Mean Squared Error:', metrics.mean_squared_error(y_test, predictions))  # Printing the Mean Squared Error of the predictions
+    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, predictions)))  # Printing the Root Mean Squared Error of the predictions
+    print(finalmodel.score(teEns,y_test))
+    return {'RESULT':predictions}, y_test
+
+
+def predict4(x,y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    estimators = [('ridge', RidgeCV()), ('lasso', LassoCV(random_state=42)), ('knr', KNeighborsRegressor(n_neighbors=20, metric='euclidean')), ('rf', RandomForestRegressor()), ('svr', SVR())]
+    final_estimator = GradientBoostingRegressor(n_estimators=25, subsample=0.5, min_samples_leaf=25, max_features=1,random_state=42)
+    regressor = StackingRegressor(estimators=estimators,final_estimator=final_estimator)
+    #regressor = MLPRegressor(max_iter=9999)
+    regressor.fit(X_train,y_train)
+    print(regressor.score(X_test,y_test))
+    pred = regressor.predict(X_test)
+    print(metrics.mean_squared_error(pred,y_test))
+    return {'RESULT': regressor.predict(X_test)}, y_test
+
+
+
+# def predictLayered(x, y, n):
+#     currentX = x
+#     for i in range(n-1):
+#         print("-------NEW LAYER-------")
+#         predictions, ytest = predict(currentX,y,True)
+#         for j in predictions.keys():
+#             # print(predictions[j])
+#             # print(np.shape(predictions[j]))
+#             # print(np.shape(currentX))
+#             toAdd = np.array(predictions[j])
+#             # print(np.shape(toAdd))
+#             currentX = np.append(currentX, np.atleast_2d(toAdd).T, axis=1)
+#         print(np.shape(currentX))    
+#     predictions, ytest = predict(currentX,y,False)
+#     return predictions, ytest
+
 
 def plotRes(dictX,ytest):
     print("KEYYYYY")

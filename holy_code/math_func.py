@@ -1,8 +1,11 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal import argrelextrema
 from scipy.signal import savgol_filter
 from scipy.integrate import simps
+from scipy.interpolate import CubicHermiteSpline
+
 
 ###############################################################################################################
 
@@ -12,11 +15,13 @@ from scipy.integrate import simps
     
 #def generatePILOT(T,max,min,integral):
 
-
 def integrate(x, posX):
     integral = [0]
     for i in range(len(posX)-1):
-        integral.append(simps(x[posX[i]:posX[i+1]+1]))
+        if len(x[posX[i]:posX[i+1]+1])==0:
+            integral.append(0)
+        else:
+            integral.append(simps(x[posX[i]:posX[i+1]+1]))
     integral = np.array(integral)
     return integral
 
@@ -323,3 +328,23 @@ def cutData2D2(x,y,discrim):
     cutVectY = np.array(cutVectY)
     toCut = np.array(toCut)
     return cutVectX, cutVectY, toCut
+
+def comparePilot(pilot, x, lengthPilot):
+    xx = np.linspace(0,lengthPilot,lengthPilot)
+    x = x-np.mean(x)
+    xxx = np.linspace(0,lengthPilot,len(x))
+    xInter = CubicHermiteSpline(xxx,x, finiteDiffDiscrete(x))
+    #Diff = (pilot-xInter)**2
+    xxxx = np.linspace(0,lengthPilot,1000)
+    # plt.figure()
+    # plt.plot(xxxx,xInter(xxxx))
+    # plt.plot(xxxx,pilot(xxxx))
+    # plt.title("INTERP")
+    # plt.show(block = False)
+    # Int = 0
+    # plt.figure()
+    pilotCorr = np.array(pilot(xxxx))
+    xCorr = np.array(xInter(xxxx))
+    corr = np.correlate(xCorr,pilotCorr)
+    return abs(corr[0])
+

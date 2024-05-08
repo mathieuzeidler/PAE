@@ -60,6 +60,10 @@ def stacker(directories):
         M_SPO2, M_ART, M_PLETH  = process_data(setI,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
         ARTFINAL = np.append(ARTFINAL,M_ART)
         PLETHFINAL = np.append(PLETHFINAL,M_PLETH)
+    print("LENGTH ART")
+    print(len(ARTFINAL))
+    print("LENGTH PLETH")
+    print(len(PLETHFINAL))
     return ARTFINAL, PLETHFINAL
 
 def display_matrices(M_SPO2, M_ART, M_PLETH):

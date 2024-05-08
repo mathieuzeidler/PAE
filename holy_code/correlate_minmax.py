@@ -3,6 +3,7 @@ import math_func as mf
 import math
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
+from scipy.interpolate import CubicHermiteSpline
 
 def getMeans(x, ncicl):
     meanVect = []
@@ -38,10 +39,35 @@ def corrMax2(smoothed):
     # plt.show()
     return absMaxSmoothed,absMinSmoothed, maxPos, minPos
 
-def corrMaxMain2(x,y,sigma,ncicl):
+def corrMaxMain2(x,y,sigma,ncicl,cutCorr):
     print("CHECK 3-----------------")
     maximumsVectXT, minimumsVectXT, maximumsPosX, minimumsPosX = corrMax2(x)
     maximumsVectYT, minimumsVectYT, maximumsPosY, minimumsPosY = corrMax2(y)
+
+    pilot = np.load("PILOT.npy")
+    pilot = pilot-np.mean(pilot)
+    pilotInter = CubicHermiteSpline(np.arange(len(pilot)),pilot,mf.finiteDiffDiscrete(pilot))
+
+    corrVect = []
+    critCorr = []
+    for i in range(len(minimumsPosX)-1):
+        v = mf.comparePilot(pilotInter,x[minimumsPosX[i]:minimumsPosX[i+1]],len(pilot))
+        corrVect.append(v)
+        if(v<cutCorr):
+            critCorr.append(i)
+    critCorr = np.array(critCorr)
+    corrVect = np.array(corrVect)
+
+    maximumsPosX = np.delete(maximumsPosX,critCorr)
+    minimumsPosX = np.delete(minimumsPosX,critCorr)
+    maximumsPosY = np.delete(maximumsPosY,critCorr)
+    minimumsPosY = np.delete(minimumsPosY,critCorr)
+
+    maximumsVectXT = np.delete(maximumsVectXT,critCorr)
+    minimumsVectXT = np.delete(minimumsVectXT,critCorr)
+    maximumsVectYT = np.delete(maximumsVectYT,critCorr)
+    minimumsVectYT = np.delete(minimumsVectYT,critCorr)
+
     print("CHECK 2-----------------")
     maximumsVectX = getMeans(maximumsVectXT,ncicl)
     maximumsVectY = getMeans(maximumsVectYT,ncicl)
@@ -78,6 +104,24 @@ def corrMaxMain2(x,y,sigma,ncicl):
     intY = intY[:n3]
 
 
+    print("LENGTHS")
+    print(len(minimumsPosX))
+    print(len(maximumsPosX))
+    print(len(minimumsPosY))
+    print(len(maximumsPosY))
+    print("CRITCORR")
+    print(critCorr)
+
+    # maximumsPosX = np.delete(maximumsPosX,critCorr)
+    # minimumsPosX = np.delete(minimumsPosX,critCorr)
+    # maximumsPosY = np.delete(maximumsPosY,critCorr)
+    # minimumsPosY = np.delete(minimumsPosY,critCorr)
+
+    # print("CHECK 99")
+    # plt.figure()
+    # plt.plot(corrVect)
+    # plt.title("CORRELATION")
+    # plt.show()
 
     print("CHECK 1-----------------")
 
@@ -104,11 +148,6 @@ def corrMaxMain2(x,y,sigma,ncicl):
     cutMaximumsVectX, cutMaximumsVectY, toCutMax = mf.cutData2D2(maximumsVectX,maximumsVectY,sigma)
     cutMinimumsVectX, cutMinimumsVectY, toCutMin = mf.cutData2D2(minimumsVectX,minimumsVectY,sigma)
 
-    maximumsPosX = np.delete(maximumsPosX,toCutMax)
-    minimumsPosX = np.delete(minimumsPosX,toCutMin)
-    maximumsPosY = np.delete(maximumsPosY,toCutMax)
-    minimumsPosY = np.delete(minimumsPosY,toCutMin)
-
     print("------------")
     print(len(minimumsPosX))
     print(len(minimumsPosY))
@@ -117,16 +156,26 @@ def corrMaxMain2(x,y,sigma,ncicl):
     print(len(intX))
     print(len(intY))
 
-    if len(toCutMin) >= len(toCutMax):
-        frecX = np.delete(frecX,toCutMin)
-        frecY = np.delete(frecY,toCutMin)
-        intX = np.delete(intX,toCutMin)
-        intY = np.delete(intY,toCutMin)
+    if min(len(toCutMin),len(toCutMax))>0:
+        maximumsPosX = np.delete(maximumsPosX,toCutMax)
+        minimumsPosX = np.delete(minimumsPosX,toCutMin)
+        maximumsPosY = np.delete(maximumsPosY,toCutMax)
+        minimumsPosY = np.delete(minimumsPosY,toCutMin)
+        if len(toCutMin) >= len(toCutMax):
+            frecX = np.delete(frecX,toCutMin)
+            frecY = np.delete(frecY,toCutMin)
+            intX = np.delete(intX,toCutMin)
+            intY = np.delete(intY,toCutMin)
+        else:
+            frecX = np.delete(frecX,toCutMax)
+            frecY = np.delete(frecY,toCutMax)
+            intX = np.delete(intX,toCutMax)
+            intY = np.delete(intY,toCutMax)
     else:
-        frecX = np.delete(frecX,toCutMax)
-        frecY = np.delete(frecY,toCutMax)
-        intX = np.delete(intX,toCutMax)
-        intY = np.delete(intY,toCutMax)
+        print("CUTMAX")
+        print(len(toCutMax))
+        print("CUTMIN")
+        print(len(toCutMin))
 
     print("********")
     print(len(frecX))
@@ -140,12 +189,12 @@ def corrMaxMain2(x,y,sigma,ncicl):
     xLinSpace = np.linspace(-200,200,1000)
     plt.plot(xLinSpace, linMaxXY.intercept + linMaxXY.slope*xLinSpace, 'r', label='fitted line')
     plt.hlines(np.mean(maximumsVectY),-200,200, colors="red")
-    plt.hlines(np.mean(maximumsVectY)-1.4*np.std(maximumsVectY),-200,200, colors="red")
+    plt.hlines(np.mean(maximumsVectY)-sigma*np.std(maximumsVectY),-200,200, colors="red")
     #print("MMMMMM")
     #print(np.mean(maximumsVectX))
     plt.vlines(np.mean(maximumsVectX),10,90, colors="orange")
-    plt.vlines(np.mean(maximumsVectX)-1.4*np.std(maximumsVectX),10,90, colors="orange")
-    plt.vlines(np.mean(maximumsVectX)+1.4*np.std(maximumsVectX),10,90, colors="orange")
+    plt.vlines(np.mean(maximumsVectX)-sigma*np.std(maximumsVectX),10,90, colors="orange")
+    plt.vlines(np.mean(maximumsVectX)+sigma*np.std(maximumsVectX),10,90, colors="orange")
     plt.xlabel("Maximums PLETH")
     plt.ylabel("Maximums ART")
     plt.title("MAX SCATTERPLOT")
@@ -157,7 +206,7 @@ def corrMaxMain2(x,y,sigma,ncicl):
     xLinSpace = np.linspace(-200,200,1000)
     plt.plot(xLinSpace, linMinXY.intercept + linMinXY.slope*xLinSpace, 'r', label='fitted line')
     plt.hlines(np.mean(minimumsVectY),-200,200, colors="red")
-    plt.hlines(np.mean(minimumsVectY)-1.4*np.std(minimumsVectY),-200,200, colors="red")
+    plt.hlines(np.mean(minimumsVectY)-sigma*np.std(minimumsVectY),-200,200, colors="red")
     #print("MMMMMM")
     #print(np.mean(maximumsVectX))
     plt.xlabel("MINIMUMS PLETH")
