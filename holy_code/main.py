@@ -46,7 +46,7 @@ M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/AB
 
 
 # Displaying the M matrices
-#display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
+display_matrices(M_SPO2, M_ART, M_PLETH) #uncomment to display the matrices
 
 ###############################################################################################################
     
