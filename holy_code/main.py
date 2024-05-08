@@ -12,6 +12,8 @@ from sklearn.metrics import r2_score
 from sklearn import metrics
 from correlate_minmax import corrMaxMain
 from data_prediction import predict
+from scipy.signal import argrelextrema
+from math_func import vectCycleIntegral
 
 ###############################################################################################################
 
@@ -40,6 +42,30 @@ setD = read_data(test, testObj)
     ## Displaying the data and storing the values in the matrices
 
 #################################################################################################################
+list_var = ['SNUADC/PLETH', 'SNUADC/ART', 'SNUADC/PLETH_SPO2']
+
+#CONVERT THE .VITAL FILE TO A .VITAL FILE WITH ONLY 3 VARIABLES
+vf = vd.VitalFile("1.vital", list_var)
+vf.to_vital('3var.vital')
+
+#NOW WE HAVE A .VITAL FILE WITH ONLY 3 VARIABLES
+#WE CAN NOW READ THE FILE
+vf = vd.VitalFile("3var.vital", list_var)
+
+#FIRST WE WANT TO SEE THE ARRAYS OF THE VARIABLES
+#ELIMINATE THE NAN VALUES
+list_var1 = vf.get_track_samples('SNUADC/PLETH', 1/2)
+list_var1 = [x for x in list_var1 if not np.isnan(x)]
+list_var2 = vf.get_track_samples('SNUADC/ART', 1/2)
+list_var2 = [x for x in list_var2 if not np.isnan(x)]
+
+
+testObj = vd.read_vital("3var.vital")
+
+
+
+# Reading the data
+setD = read_data(list_var, testObj)
 
 k = 1
 M_SPO2, M_ART, M_PLETH = process_data(setD,'Infinity/PLETH_SPO2', 'Intellivue/ABP', 'Intellivue/PLETH')
@@ -64,6 +90,22 @@ filtered_M_PLETH, k, locAbsM_PLETH, locAbsm_PLETH, smoothedM_Pleth = filter_oper
 
 #Correlations:
 maxvectPLETH, maxvectART, minvectPLETH, minvectART = corrMaxMain(M_PLETH[:456000],M_ART[:456000],2000,sigma)
+
+#Integral cycles:
+# Use argrelextrema to find indices of minima
+min_indices = argrelextrema(filtered_M_PLETH, np.less)
+min_indices = min_indices[0]
+print('                                        ')
+print('Vector of minima indices of PLETH signal')
+print(min_indices)
+print("Size of min_indices: ", min_indices.size)
+
+
+print('                                         ')
+print('Vector of integral cycles of PLETH signal')
+vectIntegrals = vectCycleIntegral(filtered_M_PLETH, min_indices)
+print(vectIntegrals)
+print("Size of vectIntegrals: ", vectIntegrals.size)
 
 ###################################################################################################
 # Malak parts (t'es moche)
