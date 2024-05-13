@@ -158,7 +158,7 @@ def excludeMinimums2(x,indexMax,locMin):
     valuesMin = []
     indexMin = []
     conflict = []
-    toDel = [0]
+    toDel = []
     print(locMin)
     print(len(indexMax))
     print(indexMax)
@@ -192,9 +192,11 @@ def excludeMinimums2(x,indexMax,locMin):
     indexMin = np.array(indexMin)
     conflict = np.array(conflict)
     toDel = np.array(toDel)
-    indexMax = np.delete(indexMax,toDel) 
+    if len(toDel)>0:
+        indexMax = np.delete(indexMax,toDel) 
     print(len(valuesMin)+len(conflict)-len(indexMax))
-    print(conflict[0])
+    if len(conflict)>0:
+       print(conflict[0])
     print(valuesMin)
     print(len(valuesMin))
     print(indexMax)

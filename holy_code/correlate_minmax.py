@@ -7,6 +7,8 @@ from scipy.interpolate import CubicHermiteSpline
 
 def getMeans(x, ncicl):
     meanVect = []
+    maxDis = []
+    minDis = []
     k = 0
     n1 = len(x)
     while n1-k>ncicl:
@@ -15,22 +17,31 @@ def getMeans(x, ncicl):
         mini = np.min(x[k:k+ncicl])
         mean = (mean - maxi - mini)/(ncicl-2)
         meanVect.append(mean)
+        maxDis.append(maxi)
+        minDis.append(mini)
         k += ncicl
     if n1-k>0:
         meanVect.append(np.mean(x[k:]))
+        maxDis.append(np.max(x[k:]))
+        minDis.append(np.min(x[k:]))
     meanVect = np.array(meanVect)
-    return meanVect
+    maxDis = np.array(maxDis)
+    minDis = np.array(minDis)
+    return meanVect, maxDis, minDis
 
 def corrMax2(smoothed):
     smoothedMax = mf.localMaxOP2(smoothed)
     smoothedMin = mf.localMinOP2(smoothed)
+
     print("CHECK 4-----------------")
     absMaxSmoothed, maxPos = mf.excludeMaximums2(smoothed,smoothedMax[0])
     print("CHECK 5-----------------")
     print(smoothedMin[0])
     print(maxPos)
     absMinSmoothed, minPos, critical, toDel = mf.excludeMinimums2(smoothed, maxPos,smoothedMin[0])
-    absMaxSmoothed = np.delete(absMaxSmoothed,toDel)
+    if len(toDel)>0:
+        absMaxSmoothed = np.delete(absMaxSmoothed,toDel)
+        maxPos = np.delete(maxPos,toDel)
     # plt.figure()
     # plt.plot(smoothed[0:5000000])
     # plt.vlines(critical*(critical<5000000), np.min(smoothed),np.max(smoothed),colors="red", alpha=0.5)
@@ -57,40 +68,81 @@ def corrMaxMain2(x,y,sigma,ncicl,cutCorr):
             critCorr.append(i)
     critCorr = np.array(critCorr)
     corrVect = np.array(corrVect)
+    print("LEEEN")
+    print(len(maximumsPosX))
+    print(len(maximumsPosY))
+    print(len(minimumsPosX))
+    print(len(minimumsPosY))
+    
+    if len(maximumsPosX)>len(maximumsPosY):
+        aux = np.zeros((len(maximumsPosX),),dtype=int)
+        aux[:len(maximumsPosY)] = maximumsPosY
+        aux[len(maximumsPosY):] = maximumsPosX[len(maximumsPosY):]
+        maximumsPosY = aux
 
-    maximumsPosX = np.delete(maximumsPosX,critCorr)
-    minimumsPosX = np.delete(minimumsPosX,critCorr)
-    maximumsPosY = np.delete(maximumsPosY,critCorr)
-    minimumsPosY = np.delete(minimumsPosY,critCorr)
+        aux = np.zeros((len(minimumsPosX),),dtype=int)
+        aux[:len(minimumsPosY)] = minimumsPosY
+        aux[len(minimumsPosY):] = minimumsPosX[len(minimumsPosY):]
+        minimumsPosY = aux
 
-    maximumsVectXT = np.delete(maximumsVectXT,critCorr)
-    minimumsVectXT = np.delete(minimumsVectXT,critCorr)
-    maximumsVectYT = np.delete(maximumsVectYT,critCorr)
-    minimumsVectYT = np.delete(minimumsVectYT,critCorr)
+        aux = np.zeros((len(maximumsVectXT),))
+        aux[:len(maximumsVectYT)] = maximumsVectYT
+        aux[len(maximumsVectYT):] = maximumsVectXT[len(maximumsVectYT):]
+        maximumsVectYT = aux
+
+        aux = np.zeros((len(minimumsVectXT),))
+        aux[:len(minimumsVectYT)] = minimumsVectYT
+        aux[len(minimumsVectYT):] = minimumsVectXT[len(minimumsVectYT):]
+        minimumsVectYT = aux
+        
+    print("LEEEN")
+    print(len(maximumsPosX))
+    print(len(maximumsPosY))
+    print(len(minimumsPosX))
+    print(minimumsPosY)
+
+    if len(critCorr)>0:
+        maximumsPosX = np.delete(maximumsPosX,critCorr)
+        minimumsPosX = np.delete(minimumsPosX,critCorr)
+        maximumsPosY = np.delete(maximumsPosY,critCorr)
+        minimumsPosY = np.delete(minimumsPosY,critCorr)
+
+        maximumsVectXT = np.delete(maximumsVectXT,critCorr)
+        minimumsVectXT = np.delete(minimumsVectXT,critCorr)
+        maximumsVectYT = np.delete(maximumsVectYT,critCorr)
+        minimumsVectYT = np.delete(minimumsVectYT,critCorr)
 
     print("CHECK 2-----------------")
-    maximumsVectX = getMeans(maximumsVectXT,ncicl)
-    maximumsVectY = getMeans(maximumsVectYT,ncicl)
-    minimumsVectX = getMeans(minimumsVectXT,ncicl)
-    minimumsVectY = getMeans(minimumsVectYT,ncicl)
+    maximumsVectX, maxmaxDisX, minmaxDisX = getMeans(maximumsVectXT,ncicl)
+    maximumsVectY, maxmaxDisY, minmaxDisY = getMeans(maximumsVectYT,ncicl)
+    minimumsVectX, maxminDisX, minminDisX = getMeans(minimumsVectXT,ncicl)
+    minimumsVectY, maxminDisY, minminDisY = getMeans(minimumsVectYT,ncicl)
 
     frecXT = mf.finiteDiffDiscrete(minimumsPosX)
     frecYT = mf.finiteDiffDiscrete(minimumsPosY)
 
-    frecX = getMeans(frecXT,ncicl)
-    frecY = getMeans(frecYT,ncicl)
+    frecX, ppp, pppp = getMeans(frecXT,ncicl)
+    frecY, ppp, pppp = getMeans(frecYT,ncicl)
 
     intXT = mf.integrate(x,minimumsPosX)
     intYT = mf.integrate(y,minimumsPosY)
 
-    intX = getMeans(intXT,ncicl)
-    intY = getMeans(intYT,ncicl)
+    intX, ppp, pppp = getMeans(intXT,ncicl)
+    intY, ppp, pppp = getMeans(intYT,ncicl)
 
     n1 = len(maximumsVectX)
     n2 = len(maximumsVectY)
     n3 = min(n1,n2)
 
     maximumsVectX = maximumsVectX[:n3]
+    maxmaxDisX = maxmaxDisX[:n3]
+    maxminDisX = maxminDisX[:n3]
+    maxmaxDisY = maxmaxDisY[:n3]
+    maxminDisY = maxminDisY[:n3]
+    minmaxDisX = minmaxDisX[:n3]
+    minminDisX = minminDisX[:n3]
+    minminDisY = minminDisY[:n3]
+    minmaxDisY = minmaxDisY[:n3]
     maximumsVectY = maximumsVectY[:n3]
     minimumsVectX = minimumsVectX[:n3]
     minimumsVectY = minimumsVectY[:n3]
@@ -155,12 +207,22 @@ def corrMaxMain2(x,y,sigma,ncicl,cutCorr):
     print(len(frecY))
     print(len(intX))
     print(len(intY))
+    print(len(maxminDisX))
+    print(len(minminDisX))
 
     if min(len(toCutMin),len(toCutMax))>0:
         maximumsPosX = np.delete(maximumsPosX,toCutMax)
         minimumsPosX = np.delete(minimumsPosX,toCutMin)
         maximumsPosY = np.delete(maximumsPosY,toCutMax)
         minimumsPosY = np.delete(minimumsPosY,toCutMin)
+        maxmaxDisX = np.delete(maxmaxDisX,toCutMax)
+        minmaxDisX = np.delete(minmaxDisX,toCutMax)
+        maxmaxDisY = np.delete(maxmaxDisY,toCutMax)
+        minmaxDisY = np.delete(minmaxDisY,toCutMax)
+        maxminDisX = np.delete(maxminDisX,toCutMin)
+        minminDisX = np.delete(minminDisX,toCutMin)
+        maxminDisY = np.delete(maxminDisY,toCutMin)
+        minminDisY = np.delete(minminDisY,toCutMin)
         if len(toCutMin) >= len(toCutMax):
             frecX = np.delete(frecX,toCutMin)
             frecY = np.delete(frecY,toCutMin)
@@ -219,7 +281,7 @@ def corrMaxMain2(x,y,sigma,ncicl,cutCorr):
     print("CORRELATION COEFF MAXMAX: ", np.corrcoef(cutMaximumsVectX,cutMaximumsVectY)[0,1])
     print("CORRELATION COEFF MINMIN: ", np.corrcoef(cutMinimumsVectX,cutMinimumsVectY)[0,1])
 
-    return cutMaximumsVectX, cutMaximumsVectY, cutMinimumsVectX, cutMinimumsVectY, maximumsPosX, maximumsPosY, minimumsPosX, minimumsPosY, frecX, frecY, intX, intY # X => PLETH, Y => ART
+    return cutMaximumsVectX, cutMaximumsVectY, cutMinimumsVectX, cutMinimumsVectY, maximumsPosX, maximumsPosY, minimumsPosX, minimumsPosY, frecX, frecY, intX, intY, maxmaxDisX, minmaxDisX, maxminDisX, minminDisX , maxmaxDisY, minmaxDisY, maxminDisY, minminDisY # X => PLETH, Y => ART
 
 def corrMax(x,sigma, count):
     smoothed = []

@@ -25,6 +25,7 @@ def LSTMmain(x,y):
     transformed = scaler.transform(toTransform)
     x_ft_scaled = transformed[:,:np.shape(x)[1]]
     y_ft_scaled = transformed[:,-1]
+    print(np.max(np.abs(x_ft_scaled[:,-4]-y_ft_scaled)))
     trainX = []
     trainY = []
 
@@ -39,7 +40,6 @@ def LSTMmain(x,y):
         trainY.append(y_ft_scaled[i + n_future - 1:i + n_future])
     
     trainX, trainY = np.array(trainX), np.array(trainY)
-    print(trainY)
     print('trainX shape == {}.'.format(trainX.shape))
     print('trainY shape == {}.'.format(trainY.shape))
 
@@ -63,6 +63,9 @@ def LSTMmain(x,y):
     plt.figure()
     plt.plot(prediction, '-r')
     plt.plot(y_ft_scaled, '-g')
+    plt.plot(x_ft_scaled[:,0])
+    #plt.plot(x_ft_scaled[:,1])
+    #plt.plot(x_ft_scaled[:,2])
     plt.show()
     prediction_copies = np.repeat(prediction, toTransform.shape[1], axis=-1)
     y_pred_future = scaler.inverse_transform(prediction_copies)[:,-1]

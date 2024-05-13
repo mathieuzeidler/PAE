@@ -26,7 +26,7 @@ def usemodel(X_train,X_test,y_train,y_test,model,name, full, X,Y):
     print('Mean Absolute Error:', metrics.mean_absolute_error(yt, predictions))  # Printing the Mean Absolute Error of the predictions
     print('Mean Squared Error:', metrics.mean_squared_error(yt, predictions))  # Printing the Mean Squared Error of the predictions
     print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(yt, predictions)))  # Printing the Root Mean Squared Error of the predictions
-
+    print('Score:',metrics.r2_score(yt, predictions))
     return predictions  # Returning the predictions
 
 ###############################################################################################################

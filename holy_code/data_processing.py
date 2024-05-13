@@ -19,7 +19,6 @@ def process_data(setD, spo2name,artName,plethName):
     M_SPO2 = np.array([])
     M_ART = np.array([])
     M_PLETH = np.array([])
-
     for dataPair in setD:
         if dataPair[0] == spo2name:
             # Adding values to the M_SPO2 matrix without NaN

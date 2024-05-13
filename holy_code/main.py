@@ -82,7 +82,7 @@ if imp:
 
     #Correlations:
     #700000
-    maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART  = corrMaxMain2(filtered_M_PLETH[0:],filtered_M_ART[0:],1.5,40,40000)
+    maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART, maxmaxDisX, minmaxDisX, maxminDisX, minminDisX , maxmaxDisY, minmaxDisY, maxminDisY, minminDisY  = corrMaxMain2(filtered_M_PLETH[0:],filtered_M_ART[0:],3,40,40000)
 
 
     # frequencyPLETH = np.copy(minimumsPosPLETH)
@@ -211,11 +211,15 @@ if imp:
     n1 = len(maxvectPLETH)
     n2 = len(minvectPLETH)
     n3 = min(n1,n2)
-    maxvectPLETH_PRED = np.zeros((n3,4))
+    maxvectPLETH_PRED = np.zeros((n3,8))
     maxvectPLETH_PRED[:,0] = maxvectPLETH[:n3]
     maxvectPLETH_PRED[:,1] = minvectPLETH[:n3]
     maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
     maxvectPLETH_PRED[:,3] = intPLETH[:n3]
+    maxvectPLETH_PRED[:,4] = maxmaxDisX[:n3]
+    maxvectPLETH_PRED[:,5] = minmaxDisX[:n3]
+    maxvectPLETH_PRED[:,6] = maxminDisX[:n3]
+    maxvectPLETH_PRED[:,7] = minminDisX[:n3]
     np.save("maxvertpleth",maxvectPLETH_PRED)
     np.save("maxvertART",maxvectART[:n3])
 
@@ -223,17 +227,22 @@ if imp:
     plt.plot(maxvectPLETH_PRED[:,3])
     plt.title("PLETH CYCLE INTEGRALS")
     plt.show(block=False)
-    predictions_max, maxtest = predict3(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
+    predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
 
     print("------------MINIMUMS--------------")
 
     # Predictions min :
-    minvectPLETH_PRED = np.zeros((n3,4))
+    minvectPLETH_PRED = np.zeros((n3,8))
     minvectPLETH_PRED[:,0] = minvectPLETH[:n3]
     minvectPLETH_PRED[:,1] = maxvectPLETH[:n3]
-    maxvectPLETH_PRED[:,2] = frecPLETH[:n3]
-    maxvectPLETH_PRED[:,3] = intPLETH[:n3]
-    predictions_min, mintest = predict3(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
+    minvectPLETH_PRED[:,2] = frecPLETH[:n3]
+    minvectPLETH_PRED[:,3] = intPLETH[:n3]
+    minvectPLETH_PRED[:,4] = maxmaxDisX[:n3]
+    minvectPLETH_PRED[:,5] = minmaxDisX[:n3]
+    minvectPLETH_PRED[:,6] = maxminDisX[:n3]
+    minvectPLETH_PRED[:,7] = minminDisX[:n3]
+    
+    predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
 
     np.save("minvertpleth",minvectPLETH_PRED)
     np.save("minvertart",minvectART[:n3])
@@ -270,8 +279,39 @@ else:
     minvectPLETH_PRED = np.load("minvertpleth.npy")
     minvectART = np.load("minvertart.npy")
 
+    past = 30
+
+    orlen = len(maxvectPLETH_PRED[0,:])
+
+    print(orlen)
+
+    maxvectPLETH_PRED = np.append(maxvectPLETH_PRED,np.zeros((len(maxvectPLETH_PRED),past)),axis=1)
+    minvectPLETH_PRED = np.append(minvectPLETH_PRED,np.zeros((len(maxvectPLETH_PRED),past)),axis=1)
+
+    for i in range(len(maxvectPLETH_PRED)-past):
+        for j in range(past):
+            maxvectPLETH_PRED[i+past,orlen+j] = maxvectPLETH_PRED[i+past-j-1,0]
+            minvectPLETH_PRED[i+past,orlen+j] = minvectPLETH_PRED[i+past-j-1,0]
+
+    maxvectPLETH_PRED = np.append(maxvectPLETH_PRED,np.zeros((len(maxvectPLETH_PRED),past)),axis=1)
+    minvectPLETH_PRED = np.append(minvectPLETH_PRED,np.zeros((len(maxvectPLETH_PRED),past)),axis=1)
+
+    for i in range(len(maxvectPLETH_PRED)-past):
+        for j in range(past):
+            maxvectPLETH_PRED[i+past,orlen+past+j] = minvectPLETH_PRED[i+past-j-1,0]
+            minvectPLETH_PRED[i+past,orlen+past+j] = maxvectPLETH_PRED[i+past-j-1,0]
+
+    maxvectPLETH_PRED = maxvectPLETH_PRED[past:,:]
+    minvectPLETH_PRED = minvectPLETH_PRED[past:,:]
+    maxvectART = maxvectART[past:]
+    minvectART = minvectART[past:]
+    
     predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART) # predict x from y 
     predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART) # predict x from y 
+
+    # predictions_max, maxtest = predict(maxvectPLETH_PRED, maxvectART,False,False) # predict x from y 
+    # print("----------MINIMUMS------------------")
+    # predictions_min, mintest = predict(minvectPLETH_PRED, minvectART,False, False) # predict x from y 
 
     plotRes(predictions_max,maxtest)
     plotRes(predictions_min,mintest)
