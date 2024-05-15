@@ -12,7 +12,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import r2_score
 from sklearn import metrics
 from correlate_minmax import corrMaxMain, corrMaxMain2
-from data_prediction import predict, plotRes, predict3, predict4
+from data_prediction import predict, plotRes, predict3, predict4, scoringHGB, scoringRF, scoringLASSO, scoringSVR
 
 ###############################################################################################################
 
@@ -82,7 +82,7 @@ if imp:
 
     #Correlations:
     #700000
-    maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART, maxmaxDisX, minmaxDisX, maxminDisX, minminDisX , maxmaxDisY, minmaxDisY, maxminDisY, minminDisY  = corrMaxMain2(filtered_M_PLETH[0:],filtered_M_ART[0:],3,40,40000)
+    maxvectPLETH, maxvectART, minvectPLETH, minvectART, maximumsPosPLETH, maximumsPosART, minimumsPosPLETH, minimumsPosART, frecPLETH, frecART, intPLETH, intART, maxmaxDisX, minmaxDisX, maxminDisX, minminDisX , maxmaxDisY, minmaxDisY, maxminDisY, minminDisY  = corrMaxMain2(filtered_M_PLETH[0:],filtered_M_ART[0:],3,30,40000)
 
 
     # frequencyPLETH = np.copy(minimumsPosPLETH)
@@ -227,7 +227,7 @@ if imp:
     plt.plot(maxvectPLETH_PRED[:,3])
     plt.title("PLETH CYCLE INTEGRALS")
     plt.show(block=False)
-    predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART[:n3]) # predict x from y 
+    predictions_max, maxtest = predict(maxvectPLETH_PRED, maxvectART[:n3],False,False) # predict x from y 
 
     print("------------MINIMUMS--------------")
 
@@ -242,7 +242,7 @@ if imp:
     minvectPLETH_PRED[:,6] = maxminDisX[:n3]
     minvectPLETH_PRED[:,7] = minminDisX[:n3]
     
-    predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART[:n3]) # predict x from y 
+    predictions_min, mintest = predict(minvectPLETH_PRED, minvectART[:n3],False,False) # predict x from y 
 
     np.save("minvertpleth",minvectPLETH_PRED)
     np.save("minvertart",minvectART[:n3])
@@ -306,15 +306,20 @@ else:
     maxvectART = maxvectART[past:]
     minvectART = minvectART[past:]
     
-    predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART) # predict x from y 
-    predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART) # predict x from y 
+
+    scoringSVR(maxvectPLETH_PRED,maxvectART)
+
+    # print("MAXIMUMS:")
+    # predictions_max, maxtest = predict4(maxvectPLETH_PRED, maxvectART) # predict x from y 
+    # print("MINIMUMS")
+    # predictions_min, mintest = predict4(minvectPLETH_PRED, minvectART) # predict x from y 
 
     # predictions_max, maxtest = predict(maxvectPLETH_PRED, maxvectART,False,False) # predict x from y 
     # print("----------MINIMUMS------------------")
     # predictions_min, mintest = predict(minvectPLETH_PRED, minvectART,False, False) # predict x from y 
 
-    plotRes(predictions_max,maxtest)
-    plotRes(predictions_min,mintest)
+    # plotRes(predictions_max,maxtest)
+    # plotRes(predictions_min,mintest)
     plt.show()
 
     

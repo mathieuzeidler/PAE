@@ -339,6 +339,9 @@ def comparePilot(pilot, x, lengthPilot):
     #Diff = (pilot-xInter)**2
     xxxx = np.linspace(0,lengthPilot,1000)
     # plt.figure()
+    # plt.plot(xxxx,pilot(xxxx))
+    # plt.show()
+    # plt.figure()
     # plt.plot(xxxx,xInter(xxxx))
     # plt.plot(xxxx,pilot(xxxx))
     # plt.title("INTERP")

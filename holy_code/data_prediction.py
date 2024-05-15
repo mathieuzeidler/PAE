@@ -7,7 +7,7 @@ from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import HistGradientBoostingRegressor, GradientBoostingRegressor, StackingRegressor
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, cross_val_score, GridSearchCV
 from skopt.space import Integer, Real
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
@@ -106,16 +106,19 @@ def predict(x, y, full, first):  # Defining the prediction function that takes f
                                     # Mean Squared Error: 10.928526268996647
                                     # Root Mean Squared Error: 3.3058321598345923 
     predictionLasso  = usemodel(X_train,X_test,y_train,y_test,model,"Lasso Regressor", full, x,y)
-    model = SVR() # Mean Absolute Error: 1.9616585887477098
+    model = SVR(C=0.1,epsilon=0.1005) # Mean Absolute Error: 1.9616585887477098
                   # Mean Squared Error: 8.271744394120887
                   # Root Mean Squared Error: 2.876064045552687
     predictionSVR  = usemodel(X_train,X_test,y_train,y_test,model, "SVR", full, x, y)
-    model = RandomForestRegressor() # good : Mean Absolute Error: 1.9883121185203616
+    #'bootstrap': False, 'max_depth': 60, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 3, 'n_estimators': 700
+    #bootstrap = False, max_depth =  60, max_features = 'sqrt', min_samples_leaf = 1, min_samples_split = 3, n_estimators = 700
+    #bootstrap = False, max_depth =  50, max_features = 'sqrt', min_samples_leaf = 1, min_samples_split = 2, n_estimators = 800
+    model = RandomForestRegressor(bootstrap = False, max_depth =  50, max_features = 'sqrt', min_samples_leaf = 1, min_samples_split = 2, n_estimators = 800) # good : Mean Absolute Error: 1.9883121185203616
                                     #        Mean Squared Error: 8.487491537348799
                                     #        Root Mean Squared Error: 2.9133299739900385
     predictionRandomF = usemodel(X_train,X_test,y_train,y_test,model, "Random Forest Regressor", full, x,y)
 
-    model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None) # good : Mean Absolute Error: 1.6022896128593709
+    model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None, l2_regularization=0.1,learning_rate=0.1,max_iter=1200,min_samples_leaf=15) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
                                         #        Root Mean Squared Error: 2.4527025070991977
     predictionGradientB = usemodel(X_train,X_test,y_train,y_test,model,"Gradient Boosting Regressor", full, x,y)
@@ -155,13 +158,13 @@ def predict2(x, y, finalmodel):  # Defining the prediction function that takes f
     test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
     trEns = np.append(train_pred1, train_pred2, axis=1)
     teEns = np.append(test_pred1, test_pred2, axis=1)
-    model = Lasso(alpha=2) # Mean Absolute Error: 2.2465127537930596
+    model = Lasso(alpha=0.85) # Mean Absolute Error: 2.2465127537930596
                                     # Mean Squared Error: 10.928526268996647
                                     # Root Mean Squared Error: 3.3058321598345923 
     test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
     trEns = np.append(trEns, train_pred2, axis=1)
     teEns = np.append(teEns, test_pred2, axis=1)
-    model = SVR() # Mean Absolute Error: 1.9616585887477098
+    model = SVR(C=0.1,epsilon=0.1005) # Mean Absolute Error: 1.9616585887477098
                   # Mean Squared Error: 8.271744394120887
                   # Root Mean Squared Error: 2.876064045552687
     test_pred2 ,train_pred2, xx=Stacking(model=model,n_fold=10,train=X_train,test=X_test,y=y_train,already=True, folds=folds)
@@ -174,6 +177,7 @@ def predict2(x, y, finalmodel):  # Defining the prediction function that takes f
     trEns = np.append(trEns, train_pred2, axis=1)
     teEns = np.append(teEns, test_pred2, axis=1)
 
+   
     model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None) # good : Mean Absolute Error: 1.6022896128593709
                                         #        Mean Squared Error: 6.0157495883306895
                                         #        Root Mean Squared Error: 2.4527025070991977
@@ -195,7 +199,7 @@ def predict2(x, y, finalmodel):  # Defining the prediction function that takes f
 def predict3(x,y):
     #model = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None)
     model = GradientBoostingRegressor()
-    params = {"learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 1] ,"max_depth": [ 3, 4, 5, 6, 8, 10, 12, 15], "alpha": [0.1, 0.2 , 0.3, 0.4, 0.8, 0.9 ], "min_impurity_decrease" : [0.0, 0.2, 0.4 , 0.7, 5 ]}
+    params = {"learning_rate": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 1],"max_depth": [ 3, 4, 5, 6, 8, 10, 12, 15], "alpha": [0.1, 0.2 , 0.3, 0.4, 0.8, 0.9 ], "min_impurity_decrease" : [0.0, 0.2, 0.4 , 0.7, 5 ]}
     searchParams = RandomizedSearchCV(model,param_distributions=params,n_iter=100,n_jobs=-1,cv=5, scoring='neg_mean_squared_error', verbose=1)
     predictions , y_test, teEns, finalmodel = predict2(x,y,searchParams)
     print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, predictions))  # Printing the Mean Absolute Error of the predictions
@@ -207,17 +211,93 @@ def predict3(x,y):
 
 def predict4(x,y):
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
-    estimators = [('ridge', RidgeCV()), ('lasso', LassoCV(random_state=42)), ('knr', KNeighborsRegressor(n_neighbors=20, metric='euclidean')), ('rf', RandomForestRegressor()), ('svr', SVR())]
-    final_estimator = GradientBoostingRegressor(n_estimators=25, subsample=0.5, min_samples_leaf=25, max_features=1,random_state=42)
-    regressor = StackingRegressor(estimators=estimators,final_estimator=final_estimator)
+    estimators = [('linear', LinearRegression()), 
+                  ('SVR', SVR(C=0.1,epsilon=0.1005)) ,
+                  ('lasso', LassoCV(alphas=np.array([0.85,0.85,0.85,0.85,0.85]))), 
+                  ('knr', KNeighborsRegressor(n_neighbors=20, metric='euclidean')),
+                  ('RNDF', RandomForestRegressor(bootstrap = False, max_depth =  50, max_features = 'sqrt', min_samples_leaf = 1, min_samples_split = 2, n_estimators = 800)), 
+                  ('HGDB', HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None, l2_regularization=0.1,learning_rate=0.1,max_iter=1200,min_samples_leaf=15))]
+    final_estimator = GradientBoostingRegressor(n_estimators=30, subsample=0.5, min_samples_leaf=25, max_features=1)
+    #final_estimator = HistGradientBoostingRegressor(loss='squared_error',early_stopping=False, max_depth=None, l2_regularization=0.1,learning_rate=0.1,max_iter=1200,min_samples_leaf=15)
+    regressor = StackingRegressor(estimators=estimators,final_estimator=final_estimator, n_jobs=-1)
     #regressor = MLPRegressor(max_iter=9999)
     regressor.fit(X_train,y_train)
     print(regressor.score(X_test,y_test))
     pred = regressor.predict(X_test)
-    print(metrics.mean_squared_error(pred,y_test))
+    print("MAE:", metrics.mean_absolute_error(pred,y_test), sep=" ")
+    print("MSE:", metrics.mean_squared_error(pred,y_test), sep=" ")
     return {'RESULT': regressor.predict(X_test)}, y_test
 
+def scoringHGB(x,y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    param_grid = {
+    'learning_rate': [.1, .12],
+    'max_iter': [1000, 1200],
+    'min_samples_leaf': [15, 20],
+    'max_depth': [None, 10, 20],
+    'l2_regularization': [0.1, 0.01, 0.001]
+    }
+    model = HistGradientBoostingRegressor()
+    modelS = GridSearchCV(model, param_grid=param_grid,cv=10, scoring='neg_mean_squared_error', n_jobs=-1, verbose=2)
+    modelS.fit(X_train,y_train)
+    print(modelS.best_params_)
+    print(modelS.best_score_)
 
+def scoringRF(x,y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    # param_grid= {
+    #     'bootstrap': [True, False],
+    #     'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
+    #     'max_features': ['auto', 'sqrt'],
+    #     'min_samples_leaf': [1, 2, 4],
+    #     'min_samples_split': [2, 5, 10],
+    #     'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
+    # }
+    param_grid= {
+        'bootstrap': [True, False],
+        'max_depth': [40, 50, 60],
+        'max_features': ['sqrt'],
+        'min_samples_leaf': [1, 2],
+        'min_samples_split': [2, 3, 5],
+        'n_estimators': [700, 800, 900]
+    }
+    model = RandomForestRegressor() 
+    modelS = GridSearchCV(model, param_grid=param_grid,cv=5, scoring='neg_mean_squared_error', n_jobs=-1, verbose=4)
+    modelS.fit(X_train,y_train)
+    print(modelS.best_params_)
+    print(modelS.best_score_)
+
+def scoringLASSO(x,y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    # param_grid= {
+    #     'bootstrap': [True, False],
+    #     'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
+    #     'max_features': ['auto', 'sqrt'],
+    #     'min_samples_leaf': [1, 2, 4],
+    #     'min_samples_split': [2, 5, 10],
+    #     'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
+    # }
+    param_grid = {
+        'alpha' : np.arange(0.00, 1.0, 0.01)
+    }
+    model = Lasso() 
+    modelS = GridSearchCV(model, param_grid=param_grid,cv=10, scoring='neg_mean_squared_error', n_jobs=-1, verbose=1)
+    modelS.fit(X_train,y_train)
+    print(modelS.best_params_)
+    print(modelS.best_score_)
+
+def scoringSVR(x,y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)  # Splitting the data into training and testing sets
+    param_grid = {
+        'C' : np.arange(0.00, 1.0, 0.01),
+        'epsilon' : np.arange(0.01,1,100)
+    }
+    model = SVR() 
+    modelS = GridSearchCV(model, param_grid=param_grid,cv=10, scoring='neg_mean_squared_error', n_jobs=-1, verbose=1)
+    modelS.fit(X_train,y_train)
+    print(modelS.best_params_)
+    print(modelS.best_score_)
+    
 
 # def predictLayered(x, y, n):
 #     currentX = x
